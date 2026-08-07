@@ -50,6 +50,7 @@ try {
     . "$RootPath\Modules\Logging\Logging.ps1"
     . "$RootPath\Modules\UI\Banner.ps1"
     . "$RootPath\Modules\System\SystemInfo.ps1"
+    . "$RootPath\Modules\Tasks\TaskRunner.ps1"
 
 
     # Inicialização
@@ -77,6 +78,9 @@ try {
     Write-Log -Message "Processador: $($systemInfo.Processor)" -Level INFO
 
     Write-Log -Message "Memória: $($systemInfo.MemoryGB) GB" -Level INFO
+
+    Invoke-Task -TaskName "Teste Inicial"
+    
     }
 catch {
 
