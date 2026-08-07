@@ -5,6 +5,10 @@
 #
 # ============================================================================
 
+if (-not $EPSetupConfig) {
+    throw "Configuração do EPSetup não carregada."
+}
+
 $script:LogFilePath = $null
 
 function Initialize-Logging {
@@ -15,7 +19,7 @@ Prepara o sistema de logging: cria a pasta de logs (se necessário) e define
 o caminho do arquivo de log da execução atual.
 #>
 
-    $logDirectory = "C:\ProgramData\EPSetup\Logs"
+    $logDirectory = $EPSetupConfig.Paths.Logs
 
     if (-not (Test-Path -Path $logDirectory)) {
         New-Item -Path $logDirectory -ItemType Directory -Force | Out-Null
