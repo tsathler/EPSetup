@@ -8,28 +8,46 @@
 #
 # ============================================================================
 
+$RootPath = Split-Path $PSCommandPath
 
-# Carrega módulo de elevação
-. ".\Modules\Elevation\Elevation.ps1"
+$ErrorActionPreference = "Continue"
 
+try {
 
-# Verificação de privilégios - eleva automaticamente se necessário
-if (-not (Test-IsElevated)) {
-    Invoke-SelfElevation
-    exit
+    Write-Host "Main iniciado"
+
+    . "$RootPath\Modules\Elevation\Elevation.ps1"
+
+    Write-Host "Elevation carregado"
+
+    if (-not (Test-IsElevated)) {
+        Write-Host "Tentando elevar..."
+        Invoke-SelfElevation -ScriptPath $PSCommandPath
+        exit
+    }
+
+    Write-Host "Executado como administrador"
+
+    . "$RootPath\Modules\UI\Banner.ps1"
+    Write-Host "UI carregado"
+
+    . "$RootPath\Modules\Logging\Logging.ps1"
+    Write-Host "Logging carregado"
+
+    Initialize-Logging
+    Write-Host "Logging inicializado"
+
+    Write-Log -Message "EPSetup iniciado" -Level "INFO"
+
+    Show-Banner
+
+}
+catch {
+
+    Write-Host "ERRO ENCONTRADO:" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+
+    Read-Host "Pressione ENTER para fechar"
 }
 
-
-# Carrega módulos da aplicação
-. ".\Modules\UI\Banner.ps1"
-. ".\Modules\Logging\Logging.ps1"
-
-
-# Inicializa logging
-Initialize-Logging
-
-Write-Log -Message "EPSetup iniciado" -Level "INFO"
-
-
-# Exibe banner
-Show-Banner
+Read-Host "Pressione ENTER para sair"
