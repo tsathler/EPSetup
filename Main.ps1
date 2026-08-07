@@ -8,46 +8,65 @@
 #
 # ============================================================================
 
+# ============================================================================
+#
+# EPSetup
+#
+# Main entry point
+#
+# Author: Thiago Sathler
+#
+# ============================================================================
+# ============================================================================
+#
+# EPSetup
+#
+# Main entry point
+#
+# ============================================================================
+
+
 $RootPath = Split-Path $PSCommandPath
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
+
 
 try {
 
-    Write-Host "Main iniciado"
+    # Configuração
+    . "$RootPath\Modules\Config\Config.ps1"
 
+
+    # Elevação
     . "$RootPath\Modules\Elevation\Elevation.ps1"
 
-    Write-Host "Elevation carregado"
-
     if (-not (Test-IsElevated)) {
-        Write-Host "Tentando elevar..."
         Invoke-SelfElevation -ScriptPath $PSCommandPath
         exit
     }
 
-    Write-Host "Executado como administrador"
 
-    . "$RootPath\Modules\UI\Banner.ps1"
-    Write-Host "UI carregado"
-
+    # Módulos da aplicação
     . "$RootPath\Modules\Logging\Logging.ps1"
-    Write-Host "Logging carregado"
+    . "$RootPath\Modules\UI\Banner.ps1"
 
+
+    # Inicialização
     Initialize-Logging
-    Write-Host "Logging inicializado"
 
-    Write-Log -Message "EPSetup iniciado" -Level "INFO"
+    Write-Log `
+        -Message "$($EPSetupConfig.Application.Name) iniciado" `
+        -Level "INFO"
+
 
     Show-Banner
+
 
 }
 catch {
 
-    Write-Host "ERRO ENCONTRADO:" -ForegroundColor Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host "Erro: $($_.Exception.Message)" -ForegroundColor Red
 
-    Read-Host "Pressione ENTER para fechar"
 }
 
 Read-Host "Pressione ENTER para sair"
