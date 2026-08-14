@@ -214,6 +214,18 @@ function Get-SetupTasks {
         }
 
         @{
+            Name = "Renomear computador"
+
+            Condition = {
+                return $true
+            }
+
+            Action = {
+                Rename-EPComputer
+            }
+        }
+
+        @{
             Name = "Adicionar computador ao dominio"
 
             Condition = {
