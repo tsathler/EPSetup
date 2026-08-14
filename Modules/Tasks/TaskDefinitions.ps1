@@ -212,6 +212,21 @@ function Get-SetupTasks {
                 Invoke-GLPIInventory
             }
         }
+
+        @{
+            Name = "Adicionar computador ao dominio"
+
+            Condition = {
+                $answer = Read-Host "Deseja adicionar este computador ao dominio? (S/N)"
+
+                return $answer -match "^[Ss]$"
+            }
+
+            Action = {
+                Add-ComputerToDomain `
+                    -DomainName $EPSetupConfig.Domain.Name
+            }
+        }
     )
 }
 

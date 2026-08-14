@@ -33,6 +33,9 @@ $Global:EPSetupConfig = @{
     Server    = "http://conecta.cieemg.org.br/marketplace/glpiinventory"
     AgentPath = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
     LocalUrl  = "http://localhost:62354"
-}
+    }
 
+    Domain = @{
+    Name = "cieemg.bhz"
+}
 }
