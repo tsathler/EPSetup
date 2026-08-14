@@ -239,7 +239,7 @@ function Install-PDFCreator {
     Install-Software `
         -Name "PDFCreator" `
         -DownloadUrl $downloadUrl `
-        -InstallerArguments "/VERYSILENT", "/NORESTART"
+        -InstallerArguments "/VERYSILENT", "/NORESTART", "/COMPONENTS=none"
 
     if (-not (Test-SoftwareInstalled -SoftwareName "PDFCreator")) {
         throw "PDFCreator nao foi instalado corretamente."
@@ -360,6 +360,75 @@ function Rename-EPComputer {
 
         Write-Log `
             -Message "Falha ao renomear computador: $($_.Exception.Message)" `
+            -Level "ERROR"
+
+        throw
+    }
+}
+
+function Test-SophosInstalled {
+
+    $serviceNames = @(
+        "Sophos Endpoint Defense Service",
+        "Sophos File Scanner Service",
+        "Sophos MCS Agent"
+    )
+
+    foreach ($serviceName in $serviceNames) {
+
+        $service = Get-Service `
+            -Name $serviceName `
+            -ErrorAction SilentlyContinue
+
+        if ($service) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Install-SophosEndpoint {
+
+    $installerPath = "C:\EPSetup\Installers\SophosSetup.exe"
+
+    Write-Log `
+        -Message "Iniciando instalacao do Sophos Endpoint..." `
+        -Level "INFO"
+
+    if (-not (Test-Path $installerPath)) {
+
+        Write-Log `
+            -Message "Instalador do Sophos nao encontrado em $installerPath." `
+            -Level "ERROR"
+
+        throw "Instalador do Sophos nao encontrado."
+    }
+
+    try {
+
+        $process = Start-Process `
+            -FilePath $installerPath `
+            -ArgumentList "--products=endpoint --quiet" `
+            -Wait `
+            -PassThru `
+            -ErrorAction Stop
+
+        if ($process.ExitCode -ne 0) {
+
+            throw "Instalador do Sophos retornou o codigo $($process.ExitCode)."
+        }
+
+        Write-Log `
+            -Message "Sophos Endpoint instalado com sucesso." `
+            -Level "SUCCESS"
+
+        return $true
+    }
+    catch {
+
+        Write-Log `
+            -Message "Falha ao instalar o Sophos Endpoint: $($_.Exception.Message)" `
             -Level "ERROR"
 
         throw

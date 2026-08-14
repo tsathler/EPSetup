@@ -27,6 +27,31 @@ function Get-SetupTasks {
             }
         }
 
+                @{
+            Name = "Renomear computador"
+
+            Condition = {
+                return $true
+            }
+
+            Action = {
+                Rename-EPComputer
+            }
+        }
+
+        @{
+            Name = "Alterar senha do usuario atual"
+
+            Condition = {
+                return $true
+            }
+
+            Action = {
+                Set-CurrentUserPassword
+            }
+        }
+
+
 
         @{
             Name = "Configurar servico do Windows Update"
@@ -63,26 +88,6 @@ function Get-SetupTasks {
 
                 Write-Log `
                     -Message "Google Chrome instalado com sucesso." `
-                    -Level "SUCCESS"
-            }
-        }
-
-
-        @{
-            Name = "Configurar energia do computador"
-
-            Condition = {
-                return -not (Test-PowerSettings)
-            }
-
-            Action = {
-
-                if (-not (Configure-PowerSettings)) {
-                    throw "Falha ao configurar as opcoes de energia."
-                }
-
-                Write-Log `
-                    -Message "Opcoes de energia configuradas." `
                     -Level "SUCCESS"
             }
         }
@@ -183,6 +188,21 @@ function Get-SetupTasks {
         }
 
         @{
+            Name = "Adicionar computador ao dominio"
+
+            Condition = {
+                $answer = Read-Host "Deseja adicionar este computador ao dominio? (S/N)"
+
+                return $answer -match "^[Ss]$"
+            }
+
+            Action = {
+                Add-ComputerToDomain `
+                    -DomainName $EPSetupConfig.Domain.Name
+            }
+        }
+
+        @{
             Name = "Instalar GLPI Agent"
 
             Condition = {
@@ -213,32 +233,39 @@ function Get-SetupTasks {
             }
         }
 
+
+
         @{
-            Name = "Renomear computador"
+            Name = "Configurar delegacao de credenciais"
 
             Condition = {
                 return $true
             }
 
             Action = {
-                Rename-EPComputer
+                Set-CredentialDelegationPolicy
             }
         }
 
         @{
-            Name = "Adicionar computador ao dominio"
+            Name = "Instalar Sophos Endpoint"
 
             Condition = {
-                $answer = Read-Host "Deseja adicionar este computador ao dominio? (S/N)"
-
-                return $answer -match "^[Ss]$"
+                return -not (Test-SophosInstalled)
             }
 
             Action = {
-                Add-ComputerToDomain `
-                    -DomainName $EPSetupConfig.Domain.Name
+
+                if (-not (Install-SophosEndpoint)) {
+                    throw "Falha ao instalar o Sophos Endpoint."
+                }
+
+                Write-Log `
+                    -Message "Sophos Endpoint instalado com sucesso." `
+                    -Level "SUCCESS"
             }
         }
     )
 }
 
+        

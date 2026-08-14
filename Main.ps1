@@ -16,6 +16,7 @@ $RootPath = Split-Path $PSCommandPath
 $ErrorActionPreference = "Stop"
 
 
+
 try {
 
     # =========================================================================
@@ -46,7 +47,6 @@ try {
     . "$RootPath\Modules\Logging\Logging.ps1"
     . "$RootPath\Modules\UI\Banner.ps1"
     . "$RootPath\Modules\System\SystemInfo.ps1"
-    . "$RootPath\Modules\System\PowerTasks.ps1"
     . "$RootPath\Modules\System\UpdateTasks.ps1"
     . "$RootPath\Modules\Tasks\TaskRunner.ps1"
     . "$RootPath\Modules\Tasks\NetworkTasks.ps1"
@@ -82,12 +82,50 @@ try {
     
 
     # =========================================================================
-    # Execução das tarefas
-    # =========================================================================
+# Execução das tarefas
+# =========================================================================
+
+$powerSettingsApplied = $false
+
+try {
+
+    Write-Log `
+        -Message "Aplicando configuracoes temporarias de energia..." `
+        -Level "INFO"
+
+    Set-TemporaryPowerSettings
+
+    $powerSettingsApplied = $true
+
     $Tasks = Get-SetupTasks
+
     $result = Invoke-Tasks -Tasks $Tasks
+}
+finally {
 
+    if ($powerSettingsApplied) {
 
+        Write-Log `
+            -Message "Finalizando provisionamento e restaurando energia..." `
+            -Level "INFO"
+
+        try {
+
+            Restore-PowerSettings
+        }
+        catch {
+
+            Write-Log `
+                -Message "Nao foi possivel restaurar as configuracoes de energia: $($_.Exception.Message)" `
+                -Level "ERROR"
+        }
+    }
+}
+    # =========================================================================
+    # Validação final
+    # =========================================================================
+
+    Test-FinalSetup
     # =========================================================================
     # Resultado da execução
     # =========================================================================
@@ -97,6 +135,8 @@ try {
     Write-Host "Sucesso: $($result.Success)"
     Write-Host "Falhas: $($result.Failure)"
     Write-Host "Ignoradas: $($result.Skipped)"
+
+
 }
 
 
