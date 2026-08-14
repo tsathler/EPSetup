@@ -51,7 +51,6 @@ function Test-SoftwareInstalled {
 }
 
 # Instala um software a partir de um instalador
-# Instala um software a partir de um instalador
 function Install-Software {
 
     param(
@@ -62,10 +61,20 @@ function Install-Software {
         [string]$DownloadUrl,
 
         [Parameter(Mandatory = $true)]
-        [string[]]$InstallerArguments
+        [string[]]$InstallerArguments,
+
+        [ValidateSet("EXE", "MSI")]
+        [string]$InstallerType = "EXE"
     )
 
-    $installerPath = "$env:TEMP\$Name-Setup.exe"
+    $extension = if ($InstallerType -eq "MSI") {
+        ".msi"
+    }
+    else {
+        ".exe"
+    }
+
+    $installerPath = "$env:TEMP\$Name-Setup$extension"
 
     Write-Log `
         -Message "Baixando $Name..." `
@@ -91,18 +100,35 @@ function Install-Software {
         -Message "Instalando $Name..." `
         -Level "INFO"
 
+    # Define o executavel e os argumentos
+    if ($InstallerType -eq "MSI") {
+
+        $filePath = "msiexec.exe"
+
+        $arguments = @(
+            "/i"
+            "`"$installerPath`""
+        ) + $InstallerArguments
+    }
+    else {
+
+        $filePath = $installerPath
+
+        $arguments = $InstallerArguments
+    }
+
     # Executa o instalador
     $process = Start-Process `
-    -FilePath $installerPath `
-    -ArgumentList $InstallerArguments `
-    -Wait `
-    -NoNewWindow `
-    -PassThru `
-    -ErrorAction Stop
+        -FilePath $filePath `
+        -ArgumentList $arguments `
+        -Wait `
+        -NoNewWindow `
+        -PassThru `
+        -ErrorAction Stop
 
-if ($process.ExitCode -ne 0) {
-    throw "Instalacao de $Name falhou. Codigo de saida: $($process.ExitCode)"
-}
+    if ($process.ExitCode -ne 0) {
+        throw "Instalacao de $Name falhou. Codigo de saida: $($process.ExitCode)"
+    }
 
     Write-Log `
         -Message "Instalacao de $Name concluida." `
@@ -218,6 +244,56 @@ function Install-PDFCreator {
     if (-not (Test-SoftwareInstalled -SoftwareName "PDFCreator")) {
         throw "PDFCreator nao foi instalado corretamente."
     }
+
+    return $true
+}
+
+# Instala o GLPI Agent
+function Install-GLPIAgent {
+
+    $downloadUrl = "https://github.com/glpi-project/glpi-agent/releases/download/1.15/GLPI-Agent-1.15-x64.msi"
+
+    $serverUrl = "http://conecta.cieemg.org.br/marketplace/glpiinventory/"
+
+    Install-Software `
+        -Name "GLPI Agent" `
+        -DownloadUrl $downloadUrl `
+        -InstallerArguments "/quiet", "SERVER=$serverUrl", "RUNNOW=1" `
+        -InstallerType "MSI"
+
+    if (-not (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")) {
+        throw "GLPI Agent nao foi instalado corretamente."
+    }
+
+    return $true
+}
+
+# Solicita o inventario do GLPI Agent
+function Invoke-GLPIInventory {
+
+    $agentPath = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
+    $localUrl = "http://localhost:62354/now?task=inventory"
+
+    if (-not (Test-Path $agentPath)) {
+        throw "GLPI Agent nao encontrado."
+    }
+
+    Write-Log `
+        -Message "Solicitando inventario do GLPI Agent..." `
+        -Level "INFO"
+
+    $response = Invoke-WebRequest `
+        -Uri $localUrl `
+        -UseBasicParsing `
+        -ErrorAction Stop
+
+    if ($response.StatusCode -ne 200) {
+        throw "Nao foi possivel solicitar o inventario do GLPI."
+    }
+
+    Write-Log `
+        -Message "Inventario do GLPI solicitado com sucesso." `
+        -Level "SUCCESS"
 
     return $true
 }

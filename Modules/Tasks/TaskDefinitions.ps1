@@ -181,6 +181,37 @@ function Get-SetupTasks {
                     -Level "SUCCESS"
             }
         }
+
+        @{
+            Name = "Instalar GLPI Agent"
+
+            Condition = {
+                return -not (Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat")
+            }
+
+            Action = {
+
+                if (-not (Install-GLPIAgent)) {
+                    throw "Falha ao instalar o GLPI Agent."
+                }
+
+                Write-Log `
+                    -Message "GLPI Agent instalado com sucesso." `
+                    -Level "SUCCESS"
+            }
+        }
+
+        @{
+            Name = "Executar inventario do GLPI"
+
+            Condition = {
+                return Test-Path "C:\Program Files\GLPI-Agent\glpi-agent.bat"
+            }
+
+            Action = {
+                Invoke-GLPIInventory
+            }
+        }
     )
 }
 

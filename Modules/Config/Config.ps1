@@ -29,4 +29,10 @@ $Global:EPSetupConfig = @{
         RequireAdmin = $true
     }
 
+    GLPI = @{
+    Server    = "http://conecta.cieemg.org.br/marketplace/glpiinventory"
+    AgentPath = "C:\Program Files\GLPI-Agent\glpi-agent.bat"
+    LocalUrl  = "http://localhost:62354"
+}
+
 }
