@@ -1,0 +1,17 @@
+{
+    "Software": [
+        {
+            "Name": "Mozilla Firefox",
+            "DetectionName": "Mozilla Firefox",
+            "InstallerType": "EXE",
+            "Source": {
+                "Type": "Download",
+                "Url": "https://releases.mozilla.org/pub/firefox/releases/115.31.0esr/win64/pt-BR/Firefox%20Setup%20115.31.0esr.exe",
+                "Path": ""
+            },
+            "Arguments": [
+                "/S"
+            ]
+        }
+    ]
+}

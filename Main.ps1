@@ -52,7 +52,7 @@ try {
     . "$RootPath\Modules\Tasks\NetworkTasks.ps1"
     . "$RootPath\Modules\Tasks\SystemTasks.ps1"
     . "$RootPath\Modules\Tasks\TaskDefinitions.ps1"
-    . "$RootPath\Modules\Software\SoftwareTasks.ps1"
+    . "$RootPath\Modules\Software\SoftwareInstaller.ps1"
 
     # =========================================================================
     # Inicialização
