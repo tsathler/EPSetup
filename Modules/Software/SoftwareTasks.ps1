@@ -57,8 +57,9 @@ function Install-Software {
         [Parameter(Mandatory = $true)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
         [string]$DownloadUrl,
+
+        [string]$InstallerPath,
 
         [Parameter(Mandatory = $true)]
         [string[]]$InstallerArguments,
@@ -74,50 +75,76 @@ function Install-Software {
         ".exe"
     }
 
-    $installerPath = "$env:TEMP\$Name-Setup$extension"
+    # ============================================================
+    # Define a origem do instalador
+    # ============================================================
 
-    Write-Log `
-        -Message "Baixando $Name..." `
-        -Level "INFO"
+    if ($InstallerPath) {
 
-    # Baixa o instalador
-    Invoke-WebRequest `
-        -Uri $DownloadUrl `
-        -OutFile $installerPath `
-        -UseBasicParsing `
-        -ErrorAction Stop
+        # Instalador local
+        if (-not (Test-Path -LiteralPath $InstallerPath)) {
+            throw "Instalador de $Name nao encontrado: $InstallerPath"
+        }
 
-    # Verifica se o instalador foi baixado
-    if (-not (Test-Path $installerPath)) {
-        throw "Instalador de $Name nao foi baixado."
+        Write-Log `
+            -Message "Usando instalador local de $Name..." `
+            -Level "INFO"
+
+    }
+    elseif ($DownloadUrl) {
+
+        # Instalador baixado da Internet
+        $InstallerPath = "$env:TEMP\$Name-Setup$extension"
+
+        Write-Log `
+            -Message "Baixando $Name..." `
+            -Level "INFO"
+
+        Invoke-WebRequest `
+            -Uri $DownloadUrl `
+            -OutFile $InstallerPath `
+            -UseBasicParsing `
+            -ErrorAction Stop
+
+        if (-not (Test-Path -LiteralPath $InstallerPath)) {
+            throw "Instalador de $Name nao foi baixado."
+        }
+
+        Write-Log `
+            -Message "Download de $Name concluido." `
+            -Level "SUCCESS"
+
+    }
+    else {
+
+        throw "Nenhum instalador ou URL foi informado para $Name."
     }
 
-    Write-Log `
-        -Message "Download de $Name concluido." `
-        -Level "SUCCESS"
+    # ============================================================
+    # Instalação
+    # ============================================================
 
     Write-Log `
         -Message "Instalando $Name..." `
         -Level "INFO"
 
-    # Define o executavel e os argumentos
     if ($InstallerType -eq "MSI") {
 
         $filePath = "msiexec.exe"
 
         $arguments = @(
             "/i"
-            "`"$installerPath`""
+            "`"$InstallerPath`""
         ) + $InstallerArguments
+
     }
     else {
 
-        $filePath = $installerPath
+        $filePath = $InstallerPath
 
         $arguments = $InstallerArguments
     }
 
-    # Executa o instalador
     $process = Start-Process `
         -FilePath $filePath `
         -ArgumentList $arguments `
@@ -134,11 +161,17 @@ function Install-Software {
         -Message "Instalacao de $Name concluida." `
         -Level "SUCCESS"
 
-    # Remove o instalador temporario
-    Remove-Item `
-        -Path $installerPath `
-        -Force `
-        -ErrorAction SilentlyContinue
+    # ============================================================
+    # Remove apenas instaladores temporários
+    # ============================================================
+
+    if (-not $PSBoundParameters.ContainsKey("InstallerPath")) {
+
+        Remove-Item `
+            -Path $InstallerPath `
+            -Force `
+            -ErrorAction SilentlyContinue
+    }
 
     return $true
 }
@@ -231,15 +264,18 @@ function Install-MicrosoftTeams {
     return $true
 }
 
-# Instala o PDFCreator
 function Install-PDFCreator {
 
-    $downloadUrl = "https://download.pdfforge.org/download/pdfcreator/PDFCreator-stable"
+    $installerPath = Join-Path $PSScriptRoot "..\..\Installers\PDFCreatorSetup.exe"
+
+    if (-not (Test-Path -LiteralPath $installerPath)) {
+        throw "Instalador do PDFCreator nao encontrado: $installerPath"
+    }
 
     Install-Software `
         -Name "PDFCreator" `
-        -DownloadUrl $downloadUrl `
-        -InstallerArguments "/VERYSILENT", "/NORESTART", "/COMPONENTS=none"
+        -InstallerPath $installerPath `
+        -InstallerArguments "/VERYSILENT", "/NORESTART"
 
     if (-not (Test-SoftwareInstalled -SoftwareName "PDFCreator")) {
         throw "PDFCreator nao foi instalado corretamente."

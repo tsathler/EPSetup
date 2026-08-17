@@ -32,9 +32,17 @@ function Invoke-SelfElevation {
         [string]$ScriptPath
     )
 
-    $debugFile = "C:\ProgramData\EPSetup\elevation-debug.txt"
+    $debugDirectory = "C:\ProgramData\EPSetup"
+    $debugFile = Join-Path $debugDirectory "elevation-debug.txt"
 
     try {
+
+        if (-not (Test-Path -LiteralPath $debugDirectory)) {
+            New-Item `
+                -Path $debugDirectory `
+                -ItemType Directory `
+                -Force | Out-Null
+        }
 
         "Script recebido: $ScriptPath" | Out-File $debugFile -Append
 
