@@ -1,17 +1,87 @@
 {
-    "Software": [
-        {
-            "Name": "Mozilla Firefox",
-            "DetectionName": "Mozilla Firefox",
-            "InstallerType": "EXE",
-            "Source": {
-                "Type": "Download",
-                "Url": "https://releases.mozilla.org/pub/firefox/releases/115.31.0esr/win64/pt-BR/Firefox%20Setup%20115.31.0esr.exe",
-                "Path": ""
-            },
-            "Arguments": [
-                "/S"
-            ]
-        }
-    ]
+  "Software": [
+    {
+      "Name": "Google Chrome",
+      "DetectionNames": [
+        "Google Chrome"
+      ],
+      "InstallerType": "Winget",
+      "Source": {
+        "Type": "Winget",
+        "PackageId": "Google.Chrome"
+      },
+      "Arguments": []
+    },
+    {
+      "Name": "Mozilla Firefox",
+      "DetectionNames": [
+        "Mozilla Firefox"
+      ],
+      "InstallerType": "Winget",
+      "Source": {
+        "Type": "Winget",
+        "PackageId": "Mozilla.Firefox"
+      },
+      "Arguments": []
+    },
+    {
+      "Name": "WinRAR",
+      "DetectionNames": [
+        "WinRAR"
+      ],
+      "InstallerType": "Winget",
+      "Source": {
+        "Type": "Winget",
+        "PackageId": "RARLab.WinRAR"
+      },
+      "Arguments": []
+    },
+    {
+      "Name": "AnyDesk",
+      "DetectionNames": [
+        "AnyDesk"
+      ],
+      "InstallerType": "Winget",
+      "Source": {
+        "Type": "Winget",
+        "PackageId": "AnyDeskSoftwareGmbH.AnyDesk"
+      },
+      "Arguments": []
+    },
+    {
+      "Name": "PDFCreator",
+      "DetectionNames": [
+        "PDFCreator"
+      ],
+      "VerifyNotInstalled": [
+        "PDF Architect"
+      ],
+      "InstallerType": "Winget",
+      "Source": {
+        "Type": "Winget",
+        "PackageId": "PDFCreator-Free",
+        "Custom": "/COMPONENTS=\"none\""
+      },
+      "Arguments": []
+    },
+    {
+      "Name": "Microsoft Teams",
+      "DetectionNames": [
+        "Microsoft Teams",
+        "Teams Machine-Wide Installer"
+      ],
+      "AppxNames": [
+        "MSTeams"
+      ],
+      "InstallerType": "EXE",
+      "Source": {
+        "Type": "Download",
+        "Url": "https://go.microsoft.com/fwlink/?linkid=2243204&clcid=0x409",
+        "Path": ""
+      },
+      "Arguments": [
+        "-p"
+      ]
+    }
+  ]
 }

@@ -8,6 +8,10 @@
 
 function Start-EPSetup {
 
+param(
+    [string]$ScriptPath = $PSCommandPath
+)
+
 <#
 .SYNOPSIS
 Inicia o processo de configuração do EPSetup.
@@ -20,20 +24,24 @@ Boolean
 #>
 
 # =========================================================================
-# Eleva��o
+# Elevacao
 # =========================================================================
 
 if (-not (Test-EPSetupElevated)) {
 
         Invoke-EPSetupElevation `
-            -ScriptPath $PSCommandPath
+            -ScriptPath $ScriptPath
 
         return
     }
 
 # =========================================================================
-# Inicializa��o
+# Inicializacao
 # =========================================================================
+
+Initialize-EPSetupLogging | Out-Null
+
+Show-EPSetupBanner
 
 Write-EPSetupLog `
     -Message "EPSetup iniciado." `
@@ -42,24 +50,29 @@ Write-EPSetupLog `
 
 try {
 
-    # =====================================================================
-    # Obtém as tarefas disponíveis
-    # =====================================================================
+    $softwareList = @(Get-EPSoftware)
+    $selectedSoftware = @(Show-EPSoftwareSelectionMenu -SoftwareList $softwareList)
 
-    $tasks = Get-EPSetupTasks
+    if ($selectedSoftware.Count -eq 0) {
+        Write-EPSetupLog `
+            -Message "Nenhum software selecionado. Execucao cancelada pelo usuario." `
+            -Level "WARNING"
 
+        return $false
+    }
 
-    # =====================================================================
-    # Executa as tarefas
-    # =====================================================================
+    foreach ($software in $selectedSoftware) {
+        Write-EPSetupLog `
+            -Message "Usuario selecionou: $($software.Name)" `
+            -Level "INFO"
+    }
+
+    $tasks = @(Get-EPSoftwareTasks -SoftwareList $selectedSoftware)
 
     $result = Invoke-EPSetupTasks `
         -Tasks $tasks
 
-
-    # =====================================================================
-    # Finalização
-    # =====================================================================
+    Show-EPSetupSummary -Result $result
 
     if ($result.Failure -gt 0) {
 
@@ -88,5 +101,41 @@ catch {
     return $false
 }
 
+}
+
+function Show-EPSetupSummary {
+
+param(
+    [Parameter(Mandatory = $true)]
+    [hashtable]$Result
+)
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "         EXECUCAO FINALIZADA" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    foreach ($detail in $Result.Details) {
+        switch ($detail.Status) {
+            "SUCCESS" {
+                Write-Host ("[SUCCESS] {0}" -f $detail.Name) -ForegroundColor Green
+            }
+            "SKIPPED" {
+                Write-Host ("[SKIP]    {0} - ja instalado" -f $detail.Name) -ForegroundColor DarkGray
+            }
+            "FAILURE" {
+                Write-Host ("[ERROR]   {0}" -f $detail.Name) -ForegroundColor Red
+            }
+        }
+    }
+
+    Write-Host ""
+    Write-Host "----------------------------------------"
+    Write-Host ("Total:      {0}" -f $Result.Total)
+    Write-Host ("Sucesso:    {0}" -f $Result.Success)
+    Write-Host ("Ignorados:  {0}" -f $Result.Skipped)
+    Write-Host ("Erros:      {0}" -f $Result.Failure)
+    Write-Host ""
 }
 

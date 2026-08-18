@@ -29,7 +29,42 @@ function Install-EPSoftware {
     # Define o instalador
     # =========================================================================
 
-    if ($Software.Source.Type -eq "Download") {
+    if ($Software.Source.Type -eq "Winget") {
+
+        $wingetCommand = Get-Command "winget.exe" -ErrorAction SilentlyContinue
+
+        if (-not $wingetCommand) {
+            throw "Winget nao foi encontrado neste computador. Instale o App Installer ou use um instalador local para $name."
+        }
+
+        if ([string]::IsNullOrWhiteSpace($Software.Source.PackageId)) {
+            throw "PackageId do Winget nao informado para $name."
+        }
+
+        $filePath = $wingetCommand.Source
+        $processArguments = @(
+            "install"
+            "--id"
+            $Software.Source.PackageId
+            "--exact"
+            "--silent"
+            "--accept-package-agreements"
+            "--accept-source-agreements"
+        )
+
+        if ($Software.Source.Custom) {
+            $processArguments += @(
+                "--custom"
+                $Software.Source.Custom
+            )
+        }
+
+        Write-EPSetupLog `
+            -Message "Instalando $name via Winget..." `
+            -Level "INFO"
+    }
+
+    elseif ($Software.Source.Type -eq "Download") {
 
         if ([string]::IsNullOrWhiteSpace($Software.Source.Url)) {
 
@@ -103,6 +138,34 @@ function Install-EPSoftware {
     }
 
 
+    if ($Software.Source.Type -ne "Winget") {
+
+        if ($installerType -eq "MSI") {
+
+            $filePath = "msiexec.exe"
+
+            $processArguments = @(
+                "/i"
+                "`"$installerPath`""
+            ) + $arguments
+        }
+
+
+        elseif ($installerType -eq "EXE") {
+
+            $filePath = $installerPath
+
+            $processArguments = $arguments
+        }
+
+
+        else {
+
+            throw "Tipo de instalador invalido para $name`: $installerType"
+        }
+    }
+
+
     # =========================================================================
     # Instalacao
     # =========================================================================
@@ -111,30 +174,6 @@ function Install-EPSoftware {
         -Message "Instalando $name..." `
         -Level "INFO"
 
-
-    if ($installerType -eq "MSI") {
-
-        $filePath = "msiexec.exe"
-
-        $processArguments = @(
-            "/i"
-            "`"$installerPath`""
-        ) + $arguments
-    }
-
-
-    elseif ($installerType -eq "EXE") {
-
-        $filePath = $installerPath
-
-        $processArguments = $arguments
-    }
-
-
-    else {
-
-        throw "Tipo de instalador invalido para $name`: $installerType"
-    }
 
     Write-EPSetupLog `
     -Message "Executando instalador com argumentos: $processArguments" `

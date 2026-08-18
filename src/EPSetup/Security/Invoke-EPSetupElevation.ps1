@@ -21,6 +21,10 @@ function Test-EPSetupElevated {
 
 function Invoke-EPSetupElevation {
 
+    param(
+        [string]$ScriptPath
+    )
+
     try {
 
         # Caminho do manifesto do m�dulo

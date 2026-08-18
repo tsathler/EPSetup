@@ -35,18 +35,64 @@ function Get-EPInstalledSoftware {
 function Test-EPSoftwareInstalled {
 
     param(
-        [Parameter(Mandatory = $true)]
-        [string]$SoftwareName
+        [string]$SoftwareName,
+
+        [pscustomobject]$Software
     )
+
+
+    $detectionNames = @()
+    $appxNames = @()
+
+    if ($Software) {
+        $detectionNames = @($Software.DetectionNames)
+
+        if ($Software.AppxNames) {
+            $appxNames = @($Software.AppxNames)
+        }
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($SoftwareName)) {
+        $detectionNames = @($SoftwareName)
+    }
+    else {
+        throw "Informe SoftwareName ou Software para verificar a instalacao."
+    }
 
 
     $software = Get-EPInstalledSoftware
 
 
-    return $null -ne (
-        $software |
-        Where-Object {
-            $_.DisplayName -like "*$SoftwareName*"
+    foreach ($detectionName in $detectionNames) {
+        if ([string]::IsNullOrWhiteSpace($detectionName)) {
+            continue
         }
-    )
+
+        $found = $software |
+            Where-Object {
+                $_.DisplayName -like "*$detectionName*"
+            }
+
+        if ($found) {
+            return $true
+        }
+    }
+
+
+    foreach ($appxName in $appxNames) {
+        if ([string]::IsNullOrWhiteSpace($appxName)) {
+            continue
+        }
+
+        $package = Get-AppxPackage `
+            -Name $appxName `
+            -AllUsers `
+            -ErrorAction SilentlyContinue
+
+        if ($package) {
+            return $true
+        }
+    }
+
+
+    return $false
 }

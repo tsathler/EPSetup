@@ -113,6 +113,7 @@ param(
 $successCount = 0
 $failureCount = 0
 $skippedCount = 0
+$details = @()
 
 
 # Percorre todas as tarefas
@@ -141,6 +142,11 @@ foreach ($task in $Tasks) {
             $skippedCount++
         }
     }
+
+    $details += [pscustomobject]@{
+        Name = $task.Name
+        Status = $result
+    }
 }
 
 
@@ -165,9 +171,11 @@ if ($failureCount -gt 0) {
 
 # Retorna os resultados para o EPSetup
 return @{
+    Total = $Tasks.Count
     Success = $successCount
     Failure = $failureCount
     Skipped = $skippedCount
+    Details = $details
 }
 
 }
