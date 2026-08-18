@@ -9,7 +9,8 @@
   },
   "Paths": {
     "Data": "C:\\ProgramData\\EPSetup",
-    "Logs": "C:\\ProgramData\\EPSetup\\Logs"
+    "Logs": "C:\\ProgramData\\EPSetup\\Logs",
+    "Reports": "C:\\ProgramData\\EPSetup\\Reports"
   },
   "Settings": {
     "RequireAdmin": true

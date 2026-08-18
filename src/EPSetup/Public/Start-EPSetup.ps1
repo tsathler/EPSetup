@@ -118,6 +118,7 @@ function Invoke-EPSoftwareInstallationFlow {
         -Tasks $tasks
 
     Show-EPSetupSummary -Result $result
+    Export-EPExecutionReport -Result $result -Context "Software" | Out-Null
 
     Read-Host "Pressione ENTER para voltar"
 }
@@ -201,6 +202,7 @@ function Invoke-EPCredentialDelegationTestFlow {
         -Tasks $tasks
 
     Show-EPSetupSummary -Result $result
+    Export-EPExecutionReport -Result $result -Context "CredentialDelegation" | Out-Null
 
     Read-Host "Pressione ENTER para voltar"
 }
@@ -228,6 +230,7 @@ function Invoke-EPDomainJoinFlow {
     Show-EPSetupSummary -Result $result
 
     Show-EPRestartSummary
+    Export-EPExecutionReport -Result $result -Context "DomainJoin" | Out-Null
 
     Read-Host "Pressione ENTER para voltar"
 }
@@ -274,6 +277,7 @@ function Invoke-EPFullSystemConfigurationFlow {
     Show-EPSetupSummary -Result $result
 
     Show-EPRestartSummary
+    Export-EPExecutionReport -Result $result -Context "FullSystemConfiguration" | Out-Null
 
     Read-Host "Pressione ENTER para voltar"
 }
@@ -297,6 +301,7 @@ function Invoke-EPUserConfigurationFlow {
         -Tasks $tasks
 
     Show-EPSetupSummary -Result $result
+    Export-EPExecutionReport -Result $result -Context "UserConfiguration" | Out-Null
 
     Read-Host "Pressione ENTER para voltar"
 }

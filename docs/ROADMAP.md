@@ -21,6 +21,8 @@
 - [x] Perfil Portfolio/Corporate local
 - [x] Modo Dry Run
 - [x] Testes automatizados iniciais
+- [x] Script unico de validacao
+- [x] Relatorio final em JSON
 
 ## Proximas melhorias
 

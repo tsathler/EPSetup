@@ -97,11 +97,21 @@ function Import-EPJsonConfig {
 }
 
 
-function Get-EPSetupConfig {
+function Get-EPConfigRoot {
 
-    $configRoot = Join-Path `
+    if (-not [string]::IsNullOrWhiteSpace($env:EPSETUP_CONFIG_ROOT)) {
+        return $env:EPSETUP_CONFIG_ROOT
+    }
+
+    return Join-Path `
         -Path (Split-Path -Parent $PSScriptRoot) `
         -ChildPath "Config"
+}
+
+
+function Get-EPSetupConfig {
+
+    $configRoot = Get-EPConfigRoot
 
     $standardPath = Join-Path `
         -Path $configRoot `

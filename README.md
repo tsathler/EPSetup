@@ -103,8 +103,21 @@ aplicar mudancas destrutivas no sistema.
 Os testes automatizados usam Pester:
 
 ```powershell
-Invoke-Pester .\tests
+.\tests\Run-Tests.ps1
 ```
 
-Os testes atuais cobrem configuracao, perfil, validacao de dominio, Dry Run e
-contadores do executor de tarefas.
+O script valida sintaxe PowerShell e executa os testes Pester.
+
+Os testes atuais cobrem configuracao, perfil Corporate isolado, validacao de
+dominio, Dry Run, relatorio final e contadores do executor de tarefas.
+
+## Relatorios
+
+Ao concluir um fluxo com resumo, o EPSetup exporta um relatorio JSON em:
+
+```text
+C:\ProgramData\EPSetup\Reports
+```
+
+O relatorio inclui perfil ativo, contexto executado, computador, usuario,
+estado de Dry Run, resumo, detalhes das tarefas e reinicializacao pendente.

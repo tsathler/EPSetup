@@ -6,14 +6,6 @@
 #
 # ============================================================================
 
-function Get-EPConfigRoot {
-
-    return Join-Path `
-        -Path (Split-Path -Parent $PSScriptRoot) `
-        -ChildPath "Config"
-}
-
-
 function Get-EPCorporateLocalConfigPath {
 
     return Join-Path `
