@@ -50,15 +50,51 @@ Write-EPSetupLog `
 
 try {
 
+    while ($true) {
+        $mainOption = Show-EPMainMenu
+
+        switch ($mainOption) {
+            "1" {
+                Invoke-EPSoftwareInstallationFlow
+            }
+
+            "2" {
+                Invoke-EPSystemConfigurationFlow
+            }
+
+            "0" {
+                Write-EPSetupLog `
+                    -Message "EPSetup finalizado pelo usuario." `
+                    -Level "INFO"
+
+                return $true
+            }
+        }
+    }
+}
+catch {
+
+    Write-EPSetupLog `
+        -Message "Falha na execução do EPSetup: $($_.Exception.Message)" `
+        -Level "ERROR"
+
+
+    return $false
+}
+
+}
+
+function Invoke-EPSoftwareInstallationFlow {
+
     $softwareList = @(Get-EPSoftware)
     $selectedSoftware = @(Show-EPSoftwareSelectionMenu -SoftwareList $softwareList)
 
     if ($selectedSoftware.Count -eq 0) {
         Write-EPSetupLog `
-            -Message "Nenhum software selecionado. Execucao cancelada pelo usuario." `
+            -Message "Nenhum software selecionado. Instalacao de aplicativos cancelada." `
             -Level "WARNING"
 
-        return $false
+        return
     }
 
     foreach ($software in $selectedSoftware) {
@@ -74,33 +110,158 @@ try {
 
     Show-EPSetupSummary -Result $result
 
-    if ($result.Failure -gt 0) {
+    Read-Host "Pressione ENTER para voltar"
+}
 
-        Write-EPSetupLog `
-            -Message "EPSetup finalizado com falhas." `
-            -Level "ERROR"
+function Invoke-EPSystemConfigurationFlow {
 
-        return $false
+    while ($true) {
+        $systemOption = Show-EPSystemConfigurationMenu
+
+        switch ($systemOption) {
+            "1" {
+                Invoke-EPCredentialDelegationTestFlow
+            }
+
+            "2" {
+                Invoke-EPDomainJoinFlow
+            }
+
+            "3" {
+                Invoke-EPUserConfigurationFlow
+            }
+
+            "4" {
+                Invoke-EPFullSystemConfigurationFlow
+            }
+
+            "0" {
+                return
+            }
+        }
     }
-
-
-    Write-EPSetupLog `
-        -Message "EPSetup finalizado com sucesso." `
-        -Level "SUCCESS"
-
-
-    return $true
-}
-catch {
-
-    Write-EPSetupLog `
-        -Message "Falha na execução do EPSetup: $($_.Exception.Message)" `
-        -Level "ERROR"
-
-
-    return $false
 }
 
+function Invoke-EPCredentialDelegationTestFlow {
+
+    Write-EPSetupLog `
+        -Message "Iniciando teste de delegacao de credenciais RDP." `
+        -Level "INFO"
+
+    $tasks = @(
+        @{
+            Name = "Delegacao de credenciais RDP"
+            Condition = {
+                -not (Test-EPCredentialDelegation)
+            }
+            Action = {
+                Set-EPCredentialDelegation
+            }
+        }
+    )
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Read-Host "Pressione ENTER para voltar"
+}
+
+function Invoke-EPDomainJoinFlow {
+
+    Write-EPSetupLog `
+        -Message "Iniciando fluxo de entrada no dominio." `
+        -Level "INFO"
+
+    Clear-EPRestartState
+
+    $tasks = @(
+        @{
+            Name = "Adicionar ao dominio"
+            Action = {
+                Add-EPComputerToDomain -Prompt
+            }
+        }
+    )
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Show-EPRestartSummary
+
+    Read-Host "Pressione ENTER para voltar"
+}
+
+function Invoke-EPFullSystemConfigurationFlow {
+
+    Write-EPSetupLog `
+        -Message "Iniciando configuracao completa do sistema." `
+        -Level "INFO"
+
+    Clear-EPRestartState
+
+    $tasks = @(
+        @{
+            Name = "Delegacao de credenciais RDP"
+            Condition = {
+                -not (Test-EPCredentialDelegation)
+            }
+            Action = {
+                Set-EPCredentialDelegation
+            }
+        }
+
+        @{
+            Name = "Adicionar ao dominio"
+            Action = {
+                Add-EPComputerToDomain `
+                    -Prompt `
+                    -SuppressRestartPrompt
+            }
+        }
+
+        @{
+            Name = "Configuracao do usuario"
+            Action = {
+                Invoke-EPUserConfiguration
+            }
+        }
+    )
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Show-EPRestartSummary
+
+    Read-Host "Pressione ENTER para voltar"
+}
+
+function Invoke-EPUserConfigurationFlow {
+
+    Write-EPSetupLog `
+        -Message "Iniciando fluxo de configuracao do usuario." `
+        -Level "INFO"
+
+    $tasks = @(
+        @{
+            Name = "Configuracao do usuario"
+            Action = {
+                Invoke-EPUserConfiguration
+            }
+        }
+    )
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Read-Host "Pressione ENTER para voltar"
 }
 
 function Show-EPSetupSummary {
@@ -136,6 +297,28 @@ param(
     Write-Host ("Sucesso:    {0}" -f $Result.Success)
     Write-Host ("Ignorados:  {0}" -f $Result.Skipped)
     Write-Host ("Erros:      {0}" -f $Result.Failure)
+    Write-Host ""
+}
+
+function Show-EPRestartSummary {
+
+    $restartState = Get-EPRestartState
+
+    if (-not $restartState.Required) {
+        return
+    }
+
+    Write-Host "========================================" -ForegroundColor Yellow
+    Write-Host "        REINICIALIZACAO NECESSARIA" -ForegroundColor Yellow
+    Write-Host "========================================" -ForegroundColor Yellow
+    Write-Host ""
+
+    foreach ($reason in $restartState.Reasons) {
+        Write-Host ("[WARNING] {0}" -f $reason) -ForegroundColor Yellow
+    }
+
+    Write-Host ""
+    Write-Host "Reinicie o computador depois de concluir as configuracoes." -ForegroundColor Yellow
     Write-Host ""
 }
 

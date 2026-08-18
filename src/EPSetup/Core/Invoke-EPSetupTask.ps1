@@ -73,7 +73,15 @@ Write-EPSetupLog `
 try {
 
     # Executa a acao da tarefa
-    & $Action
+    $actionResult = & $Action
+
+    if ($actionResult -eq "SKIPPED") {
+        Write-EPSetupLog `
+            -Message "Tarefa ignorada: $TaskName" `
+            -Level "SKIPPED"
+
+        return "SKIPPED"
+    }
 
 
     # Registra o sucesso

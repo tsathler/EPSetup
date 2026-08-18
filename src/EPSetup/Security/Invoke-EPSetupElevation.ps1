@@ -57,7 +57,6 @@ Read-Host
                 "-NoProfile"
                 "-ExecutionPolicy"
                 "Bypass"
-                "-NoExit"
                 "-Command"
                 $command
             ) `

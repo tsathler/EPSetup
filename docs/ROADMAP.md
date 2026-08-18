@@ -1,20 +1,27 @@
-# EPSetup v1.1 — Gerenciamento de Software
+# EPSetup Roadmap
 
-## Objetivo
+## v0.1.0 - Instalacao de Aplicativos
 
-Permitir adicionar e gerenciar softwares
-sem modificar o código principal.
+- [x] Menu de selecao de aplicativos
+- [x] Instalacao dos aplicativos prioritarios do MVP
+- [x] Verificacao antes da instalacao
+- [x] Logs e resumo final
 
-## Etapas
+## v0.1.1 - Configuracao do Sistema
 
-- [ ] 1. Criar software.json
-- [ ] 2. Criar SoftwareInstaller.ps1
-- [ ] 3. Fazer o EPSetup ler o JSON
-- [ ] 4. Validar instaladores
-- [ ] 5. Executar instalação silenciosa
-- [ ] 6. Capturar ExitCode
-- [ ] 7. Integrar com Logging
-- [ ] 8. Detectar software instalado
-- [ ] 9. Habilitar/desabilitar softwares
-- [ ] 10. Criar seleção de softwares
-- [ ] 11. Preparar sistema de perfis
+- [x] Delegacao de credenciais RDP para `TERMSRV/*`
+- [x] Entrada opcional no dominio informado pelo usuario
+- [x] Solicitacao segura de credenciais com `Get-Credential`
+- [x] Deteccao do usuario atual
+- [x] Alteracao opcional do nome de usuario local
+- [x] Alteracao opcional da senha de usuario local
+- [x] Menu de Configuracao do Sistema
+- [x] Execucao completa das configuracoes de sistema
+- [x] Resumo com indicacao de reinicializacao necessaria
+
+## Proximas melhorias
+
+- [ ] Separar configuracoes Portfolio e Corporate
+- [ ] Melhorar testes automatizados das funcoes de sistema
+- [ ] Documentar exemplos de execucao
+- [ ] Adicionar perfis de execucao
