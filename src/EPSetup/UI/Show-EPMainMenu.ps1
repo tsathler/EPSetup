@@ -13,6 +13,7 @@ function Show-EPMainMenu {
 
     Write-Host "[1] Instalacao de Aplicativos"
     Write-Host "[2] Configuracao do Sistema"
+    Write-Host "[3] Perfil e Configuracao"
     Write-Host ""
     Write-Host "[0] Sair"
     Write-Host ""

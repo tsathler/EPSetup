@@ -62,6 +62,10 @@ try {
                 Invoke-EPSystemConfigurationFlow
             }
 
+            "3" {
+                Invoke-EPProfileConfigurationFlow
+            }
+
             "0" {
                 Write-EPSetupLog `
                     -Message "EPSetup finalizado pelo usuario." `
@@ -133,6 +137,34 @@ function Invoke-EPSystemConfigurationFlow {
 
             "4" {
                 Invoke-EPFullSystemConfigurationFlow
+            }
+
+            "0" {
+                return
+            }
+        }
+    }
+}
+
+function Invoke-EPProfileConfigurationFlow {
+
+    while ($true) {
+        $profileOption = Show-EPProfileConfigurationMenu
+
+        switch ($profileOption) {
+            "1" {
+                Show-EPActiveProfile
+                Read-Host "Pressione ENTER para voltar"
+            }
+
+            "2" {
+                Set-EPCorporateLocalConfig
+                Read-Host "Pressione ENTER para voltar"
+            }
+
+            "3" {
+                Clear-EPCorporateLocalConfig | Out-Null
+                Read-Host "Pressione ENTER para voltar"
             }
 
             "0" {

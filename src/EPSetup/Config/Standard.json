@@ -1,0 +1,24 @@
+{
+  "Application": {
+    "Name": "EPSetup",
+    "Version": "0.1.1"
+  },
+  "Profile": {
+    "Name": "Portfolio",
+    "Mode": "Standard"
+  },
+  "Paths": {
+    "Data": "C:\\ProgramData\\EPSetup",
+    "Logs": "C:\\ProgramData\\EPSetup\\Logs"
+  },
+  "Settings": {
+    "RequireAdmin": true
+  },
+  "System": {
+    "Domain": {
+      "DefaultDomainName": "",
+      "SuggestDefaultDomain": false,
+      "AutoJoin": false
+    }
+  }
+}

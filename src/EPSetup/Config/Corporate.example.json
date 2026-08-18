@@ -1,0 +1,13 @@
+{
+  "Profile": {
+    "Name": "Corporate",
+    "Mode": "Local"
+  },
+  "System": {
+    "Domain": {
+      "DefaultDomainName": "example.local",
+      "SuggestDefaultDomain": true,
+      "AutoJoin": false
+    }
+  }
+}

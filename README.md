@@ -58,3 +58,30 @@ empresa.
 
 Configuracoes especificas de ambiente corporativo devem permanecer separadas da
 logica principal do projeto.
+
+Pela interface, acesse:
+
+```text
+[3] Perfil e Configuracao
+```
+
+Opcoes disponiveis:
+
+```text
+[1] Ver perfil ativo
+[2] Configurar Corporate local
+[3] Limpar Corporate local
+```
+
+Ao configurar o Corporate local, o EPSetup cria ou atualiza:
+
+```text
+src/EPSetup/Config/Corporate.local.json
+```
+
+Esse arquivo e ignorado pelo Git. Ele pode conter valores padrao do ambiente,
+como um dominio sugerido, mas o EPSetup ainda pergunta se a maquina deve ou nao
+ser adicionada ao dominio. Nada e associado ao dominio automaticamente.
+
+A opcao `Limpar Corporate local` remove o `Corporate.local.json` e faz o EPSetup
+voltar ao perfil Portfolio.

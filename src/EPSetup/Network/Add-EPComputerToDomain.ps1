@@ -65,6 +65,11 @@ function Add-EPComputerToDomain {
         -Message "Verificando associacao do computador ao dominio..." `
         -Level "INFO"
 
+    $config = Get-EPSetupConfig
+    $domainConfig = $config.System.Domain
+    $defaultDomainName = $domainConfig.DefaultDomainName
+    $suggestDefaultDomain = [bool]$domainConfig.SuggestDefaultDomain
+
     if ($Prompt) {
         $answer = Read-Host "Deseja adicionar este computador ao dominio? (S/N)"
 
@@ -78,7 +83,22 @@ function Add-EPComputerToDomain {
     }
 
     if ([string]::IsNullOrWhiteSpace($DomainName)) {
-        $DomainName = Read-Host "Digite o dominio"
+        if (
+            $suggestDefaultDomain -and
+            -not [string]::IsNullOrWhiteSpace($defaultDomainName)
+        ) {
+            $typedDomain = Read-Host "Digite o dominio [$defaultDomainName]"
+
+            if ([string]::IsNullOrWhiteSpace($typedDomain)) {
+                $DomainName = $defaultDomainName
+            }
+            else {
+                $DomainName = $typedDomain
+            }
+        }
+        else {
+            $DomainName = Read-Host "Digite o dominio"
+        }
     }
 
     Test-EPDomainName -DomainName $DomainName | Out-Null

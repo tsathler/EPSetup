@@ -11,6 +11,9 @@
 *.sln.docstates
 *.env
 
+# EPSetup local/corporate configuration
+src/EPSetup/Config/Corporate.local.json
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
