@@ -24,6 +24,14 @@ function Install-EPSoftware {
         -Message "Iniciando instalacao de $name..." `
         -Level "INFO"
 
+    if (Test-EPDryRun) {
+        Write-EPSetupLog `
+            -Message "[DRY RUN] Instalacao de $name seria executada. Nenhuma alteracao foi feita." `
+            -Level "WARNING"
+
+        return $true
+    }
+
 
     # =========================================================================
     # Define o instalador

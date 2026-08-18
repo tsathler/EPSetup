@@ -121,6 +121,17 @@ function Add-EPComputerToDomain {
         -Message "Computador ainda nao pertence a um dominio. Dominio atual/workgroup: $($domainState.Domain)." `
         -Level "INFO"
 
+    if (Test-EPDryRun) {
+        Write-EPSetupLog `
+            -Message "[DRY RUN] Computador seria adicionado ao dominio $DomainName. Credenciais nao foram solicitadas e nenhuma alteracao foi feita." `
+            -Level "WARNING"
+
+        Set-EPRestartRequired `
+            -Reason "Entrada no dominio $DomainName (simulada)"
+
+        return $true
+    }
+
     Write-Host ""
     Write-Host "Credenciais administrativas do dominio" -ForegroundColor Cyan
     Write-Host "Informe uma conta autorizada a adicionar computadores ao dominio."
@@ -189,6 +200,14 @@ function Show-EPRestartPrompt {
         Write-EPSetupLog `
             -Message "Reinicializacao solicitada pelo usuario." `
             -Level "WARNING"
+
+        if (Test-EPDryRun) {
+            Write-EPSetupLog `
+                -Message "[DRY RUN] Reinicializacao seria executada. Nenhuma alteracao foi feita." `
+                -Level "WARNING"
+
+            return
+        }
 
         Restart-Computer
         return

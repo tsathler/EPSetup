@@ -159,6 +159,14 @@ function Rename-EPCurrentLocalUser {
         return "SKIPPED"
     }
 
+    if (Test-EPDryRun) {
+        Write-EPSetupLog `
+            -Message "[DRY RUN] Usuario local $($User.Name) seria renomeado para $newName. Nenhuma alteracao foi feita." `
+            -Level "WARNING"
+
+        return $true
+    }
+
     Rename-LocalUser `
         -Name $User.Name `
         -NewName $newName `
@@ -237,6 +245,14 @@ function Set-EPCurrentLocalUserPassword {
 
     if (-not (Test-EPSecureStringEqual -First $password -Second $confirmation)) {
         throw "A confirmacao da senha nao confere."
+    }
+
+    if (Test-EPDryRun) {
+        Write-EPSetupLog `
+            -Message "[DRY RUN] Senha do usuario local $($User.Name) seria alterada. Nenhuma alteracao foi feita." `
+            -Level "WARNING"
+
+        return $true
     }
 
     Set-LocalUser `

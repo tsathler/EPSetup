@@ -116,6 +116,14 @@ function Set-EPCredentialDelegation {
         return $true
     }
 
+    if (Test-EPDryRun) {
+        Write-EPSetupLog `
+            -Message "[DRY RUN] Delegacao de credenciais RDP seria configurada para $Server. Nenhuma alteracao foi feita." `
+            -Level "WARNING"
+
+        return $true
+    }
+
     try {
         if (-not (Test-Path -LiteralPath $script:EPCredentialDelegationPolicyPath)) {
             New-Item `

@@ -85,3 +85,26 @@ ser adicionada ao dominio. Nada e associado ao dominio automaticamente.
 
 A opcao `Limpar Corporate local` remove o `Corporate.local.json` e faz o EPSetup
 voltar ao perfil Portfolio.
+
+## Dry Run
+
+O menu principal possui a opcao:
+
+```text
+[4] Alternar Dry Run
+```
+
+Quando o Dry Run esta ativo, o EPSetup simula operacoes de instalacao,
+delegacao RDP, entrada no dominio, alteracao de usuario, senha e reinicio sem
+aplicar mudancas destrutivas no sistema.
+
+## Testes
+
+Os testes automatizados usam Pester:
+
+```powershell
+Invoke-Pester .\tests
+```
+
+Os testes atuais cobrem configuracao, perfil, validacao de dominio, Dry Run e
+contadores do executor de tarefas.

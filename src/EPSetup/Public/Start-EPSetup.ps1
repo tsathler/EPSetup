@@ -66,6 +66,11 @@ try {
                 Invoke-EPProfileConfigurationFlow
             }
 
+            "4" {
+                Set-EPDryRun -Enabled (-not (Test-EPDryRun))
+                Read-Host "Pressione ENTER para continuar"
+            }
+
             "0" {
                 Write-EPSetupLog `
                     -Message "EPSetup finalizado pelo usuario." `
@@ -308,6 +313,11 @@ param(
     Write-Host "         EXECUCAO FINALIZADA" -ForegroundColor Cyan
     Write-Host "========================================" -ForegroundColor Cyan
     Write-Host ""
+
+    if (Test-EPDryRun) {
+        Write-Host "[DRY RUN] Simulacao ativa. Nenhuma alteracao destrutiva foi aplicada." -ForegroundColor Yellow
+        Write-Host ""
+    }
 
     foreach ($detail in $Result.Details) {
         switch ($detail.Status) {

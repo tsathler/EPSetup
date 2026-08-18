@@ -18,10 +18,12 @@
 - [x] Menu de Configuracao do Sistema
 - [x] Execucao completa das configuracoes de sistema
 - [x] Resumo com indicacao de reinicializacao necessaria
+- [x] Perfil Portfolio/Corporate local
+- [x] Modo Dry Run
+- [x] Testes automatizados iniciais
 
 ## Proximas melhorias
 
-- [ ] Separar configuracoes Portfolio e Corporate
-- [ ] Melhorar testes automatizados das funcoes de sistema
-- [ ] Documentar exemplos de execucao
 - [ ] Adicionar perfis de execucao
+- [ ] Expandir cobertura de testes para fluxos interativos
+- [ ] Documentar exemplos de execucao
