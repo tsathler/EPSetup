@@ -1,22 +1,39 @@
 # EPSetup
-A modular PowerShell toolkit for automating Windows workstation provisioning and corporate environment configuration.
 
-## Versao atual
+EPSetup is a modular PowerShell toolkit for automating Windows workstation
+provisioning and corporate environment configuration.
 
-A versao atual possui duas areas principais:
+This repository is the portfolio-safe version of the project. It demonstrates
+the automation structure, menus, dry run behavior, logging, reports, and tests
+without versioning internal domains, servers, users, credentials, or company
+configuration.
 
-- Instalacao de Aplicativos
-- Configuracao do Sistema
+## Status
 
-Execute pelo PowerShell:
+Current version: `0.1.1`
+
+The project is an MVP with two main areas:
+
+- Application installation
+- System configuration
+
+## Requirements
+
+- Windows
+- PowerShell 5.1 or newer
+- Administrator privileges for real provisioning flows
+- Winget for most application installs
+- Pester for automated tests
+
+Run from PowerShell:
 
 ```powershell
 .\Main.ps1
 ```
 
-## Instalacao de Aplicativos
+## Application Installation
 
-O MVP de aplicativos permite selecionar e instalar:
+The application MVP can select and install:
 
 - Google Chrome
 - Mozilla Firefox
@@ -25,47 +42,45 @@ O MVP de aplicativos permite selecionar e instalar:
 - PDFCreator
 - Microsoft Teams
 
-O `Main.ps1` carrega o modulo em `src/EPSetup` e chama `Start-EPSetup`.
-O menu permite selecionar os aplicativos desejados, evita reinstalar o que ja
-estiver instalado, registra logs em `C:\ProgramData\EPSetup\Logs` e exibe um
-resumo final.
+`Main.ps1` loads the module from `src/EPSetup` and calls `Start-EPSetup`.
+The menu lets the user select applications, skips software that is already
+installed, writes logs to `C:\ProgramData\EPSetup\Logs`, and displays a final
+summary.
 
-## Decisoes de instalacao do MVP
+## Installation Decisions
 
-- Chrome, Firefox, WinRAR, AnyDesk e PDFCreator usam Winget.
-- PDFCreator usa o pacote `PDFCreator-Free` com `/COMPONENTS="none"` para
-  instalar o PDFCreator sem componentes adicionais, incluindo PDF Architect.
-- Microsoft Teams usa o `teamsbootstrapper.exe -p`, metodo atual de
-  provisionamento em massa documentado pela Microsoft.
+- Chrome, Firefox, WinRAR, AnyDesk, and PDFCreator use Winget.
+- PDFCreator uses the `PDFCreator-Free` package with `/COMPONENTS="none"` to
+  install PDFCreator without additional components, including PDF Architect.
+- Microsoft Teams uses `teamsbootstrapper.exe -p`, the current Microsoft
+  method for bulk provisioning.
 
-## Configuracao do Sistema
+## System Configuration
 
-A versao 0.1.1 adiciona as primeiras configuracoes de sistema:
+Version `0.1.1` adds the first system configuration flows:
 
-- Delegacao de credenciais RDP para `TERMSRV/*`
-- Entrada opcional no dominio informado pelo usuario
-- Configuracao do usuario atual
-- Execucao completa das configuracoes de sistema
+- RDP credential delegation for `TERMSRV/*`
+- Optional domain join with user confirmation
+- Current user configuration
+- Complete system configuration flow
 
-O EPSetup nao reinicia a maquina automaticamente. Quando uma operacao exigir
-reinicializacao, o resumo final informa que ela e necessaria.
+EPSetup does not restart the machine automatically. When an operation requires
+a restart, the final summary reports that a restart is needed.
 
-## Portfolio e Corporate
+## Portfolio and Corporate Profiles
 
-Este repositorio representa a versao Portfolio do EPSetup. Ela nao deve conter
-dominios, servidores, usuarios, credenciais ou configuracoes internas de uma
-empresa.
+The repository defaults to the `Portfolio` profile and must not contain
+company-specific values.
 
-Configuracoes especificas de ambiente corporativo devem permanecer separadas da
-logica principal do projeto.
+Corporate environment values should stay separate from the main project logic.
 
-Pela interface, acesse:
+From the interface, open:
 
 ```text
 [3] Perfil e Configuracao
 ```
 
-Opcoes disponiveis:
+Available options:
 
 ```text
 [1] Ver perfil ativo
@@ -73,51 +88,73 @@ Opcoes disponiveis:
 [3] Limpar Corporate local
 ```
 
-Ao configurar o Corporate local, o EPSetup cria ou atualiza:
+When local corporate configuration is enabled, EPSetup creates or updates:
 
 ```text
 src/EPSetup/Config/Corporate.local.json
 ```
 
-Esse arquivo e ignorado pelo Git. Ele pode conter valores padrao do ambiente,
-como um dominio sugerido, mas o EPSetup ainda pergunta se a maquina deve ou nao
-ser adicionada ao dominio. Nada e associado ao dominio automaticamente.
+This file is ignored by Git. It can store local defaults, such as a suggested
+domain, but EPSetup still asks whether the workstation should be added to the
+domain. Domain join is never automatic.
 
-A opcao `Limpar Corporate local` remove o `Corporate.local.json` e faz o EPSetup
-voltar ao perfil Portfolio.
+The `Limpar Corporate local` option removes `Corporate.local.json` and returns
+EPSetup to the `Portfolio` profile.
 
 ## Dry Run
 
-O menu principal possui a opcao:
+The main menu includes:
 
 ```text
 [4] Alternar Dry Run
 ```
 
-Quando o Dry Run esta ativo, o EPSetup simula operacoes de instalacao,
-delegacao RDP, entrada no dominio, alteracao de usuario, senha e reinicio sem
-aplicar mudancas destrutivas no sistema.
+When Dry Run is enabled, EPSetup simulates installation, RDP delegation, domain
+join, user changes, password changes, and restart operations without applying
+destructive system changes.
 
-## Testes
+## Execution Profiles
 
-Os testes automatizados usam Pester:
+The interface includes guided execution profiles:
+
+- Portfolio
+- Corporate basico
+- Corporate completo
+- Somente aplicativos
+- Somente sistema
+
+Before running a profile, EPSetup shows a pre-execution summary with the chosen
+profile, active configuration profile, Dry Run state, and planned tasks. Domain
+join still requires confirmation during execution.
+
+## Tests
+
+Automated tests use Pester:
 
 ```powershell
 .\tests\Run-Tests.ps1
 ```
 
-O script valida sintaxe PowerShell e executa os testes Pester.
+The script validates PowerShell syntax and runs the Pester suite. It fails the
+process if any test fails, which makes it suitable for local checks and future
+CI usage.
 
-Os testes atuais cobrem configuracao, perfil Corporate isolado, validacao de
-dominio, Dry Run, relatorio final e contadores do executor de tarefas.
+Current tests cover configuration loading, isolated corporate profile behavior,
+domain validation, Dry Run, final reports, and task runner counters.
 
-## Relatorios
+## Documentation
 
-Ao concluir um fluxo com resumo, o EPSetup exporta um relatorio JSON em:
+- Usage guide: `docs/USAGE.md`
+- Architecture notes: `docs/ARCHITECTURE.md`
+- Roadmap: `docs/ROADMAP.md`
+
+## Reports
+
+When a flow finishes with a summary, EPSetup exports a JSON report to:
 
 ```text
 C:\ProgramData\EPSetup\Reports
 ```
 
-O relatorio inclui perfil ativo, contexto executado, computador, usuario,
-estado de Dry Run, resumo, detalhes das tarefas e reinicializacao pendente.
+The report includes active profile, execution context, computer, user, Dry Run
+state, task summary, task details, and pending restart information.

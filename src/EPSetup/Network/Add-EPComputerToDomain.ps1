@@ -32,6 +32,7 @@ function Test-EPDomainName {
 
     param(
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string]$DomainName
     )
 

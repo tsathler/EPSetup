@@ -15,6 +15,7 @@ function Show-EPMainMenu {
     Write-Host "[2] Configuracao do Sistema"
     Write-Host "[3] Perfil e Configuracao"
     Write-Host "[4] Alternar Dry Run ($(Get-EPDryRunStatus))"
+    Write-Host "[5] Perfis de Execucao"
     Write-Host ""
     Write-Host "[0] Sair"
     Write-Host ""

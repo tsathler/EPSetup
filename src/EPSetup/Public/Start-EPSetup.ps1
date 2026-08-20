@@ -71,6 +71,10 @@ try {
                 Read-Host "Pressione ENTER para continuar"
             }
 
+            "5" {
+                Invoke-EPExecutionProfileFlow
+            }
+
             "0" {
                 Write-EPSetupLog `
                     -Message "EPSetup finalizado pelo usuario." `
@@ -180,6 +184,39 @@ function Invoke-EPProfileConfigurationFlow {
     }
 }
 
+function Invoke-EPExecutionProfileFlow {
+
+    while ($true) {
+        $profileOption = Show-EPExecutionProfileMenu
+
+        switch ($profileOption) {
+            "1" {
+                Invoke-EPPortfolioExecutionProfile
+            }
+
+            "2" {
+                Invoke-EPCorporateBasicExecutionProfile
+            }
+
+            "3" {
+                Invoke-EPCorporateFullExecutionProfile
+            }
+
+            "4" {
+                Invoke-EPSoftwareOnlyExecutionProfile
+            }
+
+            "5" {
+                Invoke-EPSystemOnlyExecutionProfile
+            }
+
+            "0" {
+                return
+            }
+        }
+    }
+}
+
 function Invoke-EPCredentialDelegationTestFlow {
 
     Write-EPSetupLog `
@@ -241,7 +278,161 @@ function Invoke-EPFullSystemConfigurationFlow {
         -Message "Iniciando configuracao completa do sistema." `
         -Level "INFO"
 
+    $steps = @(
+        "Delegacao de credenciais RDP"
+        "Adicionar ao dominio: perguntar antes"
+        "Configuracao do usuario atual"
+    )
+
+    if (-not (Confirm-EPExecutionPlan -Title "Configuracao completa do sistema" -Steps $steps)) {
+        Write-EPSetupLog `
+            -Message "Configuracao completa do sistema cancelada pelo usuario." `
+            -Level "SKIPPED"
+
+        return
+    }
+
     Clear-EPRestartState
+
+    $tasks = @(New-EPSystemConfigurationTasks -IncludeDomain -IncludeUser)
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Show-EPRestartSummary
+    Export-EPExecutionReport -Result $result -Context "FullSystemConfiguration" | Out-Null
+
+    Read-Host "Pressione ENTER para voltar"
+}
+
+function Invoke-EPPortfolioExecutionProfile {
+
+    $steps = @(
+        "Delegacao de credenciais RDP"
+        "Configuracao do usuario atual"
+    )
+
+    Invoke-EPSystemTaskProfile `
+        -Title "Portfolio" `
+        -Context "ExecutionProfile-Portfolio" `
+        -Steps $steps `
+        -Tasks @(New-EPSystemConfigurationTasks -IncludeUser)
+}
+
+function Invoke-EPCorporateBasicExecutionProfile {
+
+    $steps = @(
+        "Delegacao de credenciais RDP"
+        "Adicionar ao dominio: perguntar antes"
+    )
+
+    Invoke-EPSystemTaskProfile `
+        -Title "Corporate basico" `
+        -Context "ExecutionProfile-CorporateBasic" `
+        -Steps $steps `
+        -Tasks @(New-EPSystemConfigurationTasks -IncludeDomain)
+}
+
+function Invoke-EPCorporateFullExecutionProfile {
+
+    $steps = @(
+        "Delegacao de credenciais RDP"
+        "Adicionar ao dominio: perguntar antes"
+        "Configuracao do usuario atual"
+    )
+
+    Invoke-EPSystemTaskProfile `
+        -Title "Corporate completo" `
+        -Context "ExecutionProfile-CorporateFull" `
+        -Steps $steps `
+        -Tasks @(New-EPSystemConfigurationTasks -IncludeDomain -IncludeUser)
+}
+
+function Invoke-EPSoftwareOnlyExecutionProfile {
+
+    $steps = @(
+        "Selecao manual de aplicativos"
+        "Instalacao somente dos aplicativos selecionados"
+    )
+
+    if (-not (Confirm-EPExecutionPlan -Title "Somente aplicativos" -Steps $steps)) {
+        Write-EPSetupLog `
+            -Message "Perfil Somente aplicativos cancelado pelo usuario." `
+            -Level "SKIPPED"
+
+        return
+    }
+
+    Invoke-EPSoftwareInstallationFlow
+}
+
+function Invoke-EPSystemOnlyExecutionProfile {
+
+    $steps = @(
+        "Selecionar uma configuracao de sistema"
+        "Executar somente tarefas de sistema"
+    )
+
+    if (-not (Confirm-EPExecutionPlan -Title "Somente sistema" -Steps $steps)) {
+        Write-EPSetupLog `
+            -Message "Perfil Somente sistema cancelado pelo usuario." `
+            -Level "SKIPPED"
+
+        return
+    }
+
+    Invoke-EPSystemConfigurationFlow
+}
+
+function Invoke-EPSystemTaskProfile {
+
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Title,
+
+    [Parameter(Mandatory = $true)]
+    [string]$Context,
+
+    [Parameter(Mandatory = $true)]
+    [string[]]$Steps,
+
+    [Parameter(Mandatory = $true)]
+    [array]$Tasks
+)
+
+    Write-EPSetupLog `
+        -Message "Iniciando perfil de execucao: $Title." `
+        -Level "INFO"
+
+    if (-not (Confirm-EPExecutionPlan -Title $Title -Steps $Steps)) {
+        Write-EPSetupLog `
+            -Message "Perfil de execucao cancelado pelo usuario: $Title." `
+            -Level "SKIPPED"
+
+        return
+    }
+
+    Clear-EPRestartState
+
+    $result = Invoke-EPSetupTasks `
+        -Tasks $Tasks
+
+    Show-EPSetupSummary -Result $result
+
+    Show-EPRestartSummary
+    Export-EPExecutionReport -Result $result -Context $Context | Out-Null
+
+    Read-Host "Pressione ENTER para voltar"
+}
+
+function New-EPSystemConfigurationTasks {
+
+param(
+    [switch]$IncludeDomain,
+    [switch]$IncludeUser
+)
 
     $tasks = @(
         @{
@@ -253,8 +444,10 @@ function Invoke-EPFullSystemConfigurationFlow {
                 Set-EPCredentialDelegation
             }
         }
+    )
 
-        @{
+    if ($IncludeDomain) {
+        $tasks += @{
             Name = "Adicionar ao dominio"
             Action = {
                 Add-EPComputerToDomain `
@@ -262,24 +455,60 @@ function Invoke-EPFullSystemConfigurationFlow {
                     -SuppressRestartPrompt
             }
         }
+    }
 
-        @{
+    if ($IncludeUser) {
+        $tasks += @{
             Name = "Configuracao do usuario"
             Action = {
                 Invoke-EPUserConfiguration
             }
         }
-    )
+    }
 
-    $result = Invoke-EPSetupTasks `
-        -Tasks $tasks
+    return $tasks
+}
 
-    Show-EPSetupSummary -Result $result
+function Confirm-EPExecutionPlan {
 
-    Show-EPRestartSummary
-    Export-EPExecutionReport -Result $result -Context "FullSystemConfiguration" | Out-Null
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Title,
 
-    Read-Host "Pressione ENTER para voltar"
+    [Parameter(Mandatory = $true)]
+    [string[]]$Steps
+)
+
+    $config = Get-EPSetupConfig
+    $dryRunStatus = Get-EPDryRunStatus
+
+    Clear-Host
+    Show-EPSetupBanner
+
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "        RESUMO PRE-EXECUCAO" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host ("Perfil escolhido: {0}" -f $Title)
+    Write-Host ("Perfil ativo:     {0}" -f $config.Profile.Name)
+    Write-Host ("Dry Run:          {0}" -f $dryRunStatus)
+    Write-Host ""
+    Write-Host "Sera executado:"
+
+    foreach ($step in $Steps) {
+        Write-Host ("- {0}" -f $step)
+    }
+
+    Write-Host ""
+
+    if ($Steps -match "dominio") {
+        Write-Host "Entrada no dominio depende de confirmacao durante a execucao." -ForegroundColor Yellow
+        Write-Host ""
+    }
+
+    $confirmation = Read-Host "Deseja continuar? (S/N)"
+
+    return ($confirmation -match "^[sS]$")
 }
 
 function Invoke-EPUserConfigurationFlow {
@@ -330,7 +559,7 @@ param(
                 Write-Host ("[SUCCESS] {0}" -f $detail.Name) -ForegroundColor Green
             }
             "SKIPPED" {
-                Write-Host ("[SKIP]    {0} - ja instalado" -f $detail.Name) -ForegroundColor DarkGray
+                Write-Host ("[SKIP]    {0}" -f $detail.Name) -ForegroundColor DarkGray
             }
             "FAILURE" {
                 Write-Host ("[ERROR]   {0}" -f $detail.Name) -ForegroundColor Red

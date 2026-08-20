@@ -47,5 +47,10 @@ if ($syntaxErrors.Count -gt 0) {
 Write-Host "Sintaxe OK." -ForegroundColor Green
 Write-Host "Executando testes Pester..." -ForegroundColor Cyan
 
-Invoke-Pester `
-    -Script $PSScriptRoot
+$testResult = Invoke-Pester `
+    -Script $PSScriptRoot `
+    -PassThru
+
+if ($testResult.FailedCount -gt 0) {
+    throw "Falha nos testes Pester: $($testResult.FailedCount) teste(s) falharam."
+}

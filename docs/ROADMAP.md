@@ -23,9 +23,10 @@
 - [x] Testes automatizados iniciais
 - [x] Script unico de validacao
 - [x] Relatorio final em JSON
+- [x] Guia de uso da v0.1.1
+- [x] Perfis de execucao
+- [x] Resumo pre-execucao
 
 ## Proximas melhorias
 
-- [ ] Adicionar perfis de execucao
 - [ ] Expandir cobertura de testes para fluxos interativos
-- [ ] Documentar exemplos de execucao

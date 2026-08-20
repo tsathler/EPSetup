@@ -17,12 +17,32 @@ Describe "Domain validation" {
     It "rejects an empty domain name" {
         $module = Get-Module EPSetup
 
-        { & $module { Test-EPDomainName -DomainName "" } } | Should Throw
+        $errorMessage = & $module {
+            try {
+                Test-EPDomainName -DomainName ""
+                $null
+            }
+            catch {
+                $_.Exception.Message
+            }
+        }
+
+        $errorMessage | Should Be "O dominio nao pode estar vazio."
     }
 
     It "rejects invalid domain characters" {
         $module = Get-Module EPSetup
 
-        { & $module { Test-EPDomainName -DomainName "example\local" } } | Should Throw
+        $errorMessage = & $module {
+            try {
+                Test-EPDomainName -DomainName "example\local"
+                $null
+            }
+            catch {
+                $_.Exception.Message
+            }
+        }
+
+        $errorMessage | Should Be "O dominio informado possui caracteres invalidos."
     }
 }
