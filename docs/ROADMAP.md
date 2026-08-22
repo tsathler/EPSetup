@@ -1,4 +1,4 @@
-# WindowsProvisioningToolkit Roadmap
+# WindowsProvisioningToolkit - Roadmap
 
 ## v0.1.0 - Instalacao de Aplicativos
 
@@ -27,6 +27,6 @@
 - [x] Perfis de execucao
 - [x] Resumo pre-execucao
 
-## Proximas melhorias
+## Próximas melhorias
 
 - [ ] Expandir cobertura de testes para fluxos interativos

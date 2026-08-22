@@ -1,22 +1,18 @@
-# WindowsProvisioningToolkit - Architecture
+# WindowsProvisioningToolkit - Arquitetura
 
-## Objective
+## Objetivo
 
-WindowsProvisioningToolkit is a modular PowerShell toolkit for Windows workstation provisioning.
-The project separates portfolio-safe defaults from local corporate
-configuration so the public repository can demonstrate the automation flow
-without exposing internal environment data.
+O WindowsProvisioningToolkit é um toolkit modular em PowerShell para o provisionamento de estações de trabalho Windows. O projeto separa os padrões seguros para portfólio da configuração corporativa local, permitindo demonstrar o fluxo de automação sem expor dados internos.
 
-## Entry Point
+## Ponto de entrada
 
 ```text
 Main.ps1
 ```
 
-`Main.ps1` imports the local module manifest from `src/WindowsProvisioningToolkit/WindowsProvisioningToolkit.psd1`
-and starts the menu-driven experience with `Start-WPT`.
+`Main.ps1` importa o manifesto local de `src/WindowsProvisioningToolkit/WindowsProvisioningToolkit.psd1` e inicia a interface de menus com `Start-WPT`.
 
-## Module Layout
+## Estrutura do módulo
 
 ```text
 WindowsProvisioningToolkit/
@@ -45,18 +41,18 @@ WindowsProvisioningToolkit/
 `-- installers/
 ```
 
-## Internal Areas
+## Áreas internas
 
-- `Public`: public module entry points. Currently exports `Start-WPT`.
-- `Core`: configuration loading, logging, dry run state, task execution, restart state, and execution reports.
-- `Software`: software catalog, installation logic, detection rules, and software task creation.
-- `System`: local workstation configuration, user configuration, power settings, and system information.
-- `Network`: connectivity checks and optional domain join flow.
-- `Security`: elevation, credential delegation, and local password helpers.
-- `UI`: console menus, banner, profile configuration, and execution profile selection.
-- `Config`: portfolio defaults and a corporate example file.
+- `Public`: pontos de entrada públicos do módulo; atualmente exporta `Start-WPT`.
+- `Core`: carregamento de configuração, logs, estado do Dry Run, execução de tarefas, reinicialização e relatórios.
+- `Software`: catálogo de softwares, instalação, detecção e criação de tarefas.
+- `System`: configuração da estação, usuário, energia e informações do sistema.
+- `Network`: verificações de conectividade e entrada opcional no domínio.
+- `Security`: elevação, delegação de credenciais e auxiliares de senha.
+- `UI`: menus de console, banner, perfis e seleção de execução.
+- `Config`: padrões de portfólio e exemplo corporativo.
 
-## Configuration Model
+## Modelo de configuração
 
 The default public profile is stored in:
 
@@ -70,11 +66,9 @@ Corporate values can be generated locally in:
 src/WindowsProvisioningToolkit/Config/Corporate.local.json
 ```
 
-`Corporate.local.json` is ignored by Git and must not contain credentials,
-internal users, private servers, or production secrets. The repository includes
-only `Corporate.example.json`, which uses `example.local` as a safe placeholder.
+`Corporate.local.json` é ignorado pelo Git e não pode conter credenciais, usuários internos, servidores privados ou segredos de produção. O repositório inclui apenas `Corporate.example.json`, que usa `example.local` como valor seguro.
 
-## Execution Flow
+## Fluxo de execução
 
 1. `Main.ps1` imports the module and calls `Start-WPT`.
 2. `Start-WPT` checks elevation, initializes logging, and opens the main menu.
@@ -83,7 +77,7 @@ only `Corporate.example.json`, which uses `example.local` as a safe placeholder.
 5. The task runner records success, skipped, and failure counts.
 6. Flows with summaries export a JSON report to the configured report path.
 
-## Safety
+## Segurança
 
 - The project defaults to the `Portfolio` profile.
 - Domain join is always optional and requires confirmation during execution.
@@ -91,7 +85,7 @@ only `Corporate.example.json`, which uses `example.local` as a safe placeholder.
 - WindowsProvisioningToolkit does not restart the machine automatically after system changes.
 - Local corporate configuration is kept outside version control.
 
-## Validation
+## Validação
 
 Automated validation is centralized in:
 
@@ -99,6 +93,4 @@ Automated validation is centralized in:
 .\tests\Run-Tests.ps1
 ```
 
-The script validates PowerShell syntax and runs the Pester test suite. If any
-test fails, the script exits with an error so local verification and future CI
-checks can fail correctly.
+O script valida a sintaxe PowerShell e executa os testes Pester. Se algum teste falhar, o script termina com erro para que a verificação local e futuras execuções de CI detectem corretamente o problema.

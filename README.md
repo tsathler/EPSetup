@@ -1,23 +1,70 @@
 # WindowsProvisioningToolkit
 
-WindowsProvisioningToolkit is a modular PowerShell toolkit for automating Windows workstation
-provisioning and corporate environment configuration.
+## Português
 
-This repository is the portfolio-safe version of the project. It demonstrates
-the automation structure, menus, dry run behavior, logging, reports, and tests
-without versioning internal domains, servers, users, credentials, or company
-configuration.
+O WindowsProvisioningToolkit é um toolkit modular em PowerShell para automatizar o provisionamento de estações de trabalho Windows e a configuração de ambientes corporativos.
 
-## Status
+Este repositório é a versão segura para portfólio. Ele demonstra menus, instalação de aplicativos, configuração do sistema, modo de simulação, logs, relatórios e testes sem versionar domínios, servidores, usuários, credenciais ou configurações internas.
 
-Current version: `0.1.1`
+### Status
 
-The project is an MVP with two main areas:
+Versão atual: `0.1.1` — MVP com instalação de aplicativos e configuração do sistema.
 
-- Application installation
-- System configuration
+### Requisitos
 
-## Requirements
+- Windows
+- PowerShell 5.1 ou superior
+- Privilégios de administrador para fluxos reais
+- Winget para a maioria das instalações
+- Pester para os testes automatizados
+
+Execute no PowerShell:
+
+```powershell
+.\Main.ps1
+```
+
+### Instalação de aplicativos
+
+O MVP permite selecionar e instalar Google Chrome, Mozilla Firefox, WinRAR, AnyDesk, PDFCreator e Microsoft Teams. Aplicativos já instalados são ignorados. Os logs são gravados em `C:\ProgramData\WindowsProvisioningToolkit\Logs` e um resumo é exibido ao final.
+
+Chrome, Firefox, WinRAR, AnyDesk e PDFCreator usam Winget. O PDFCreator usa o pacote `PDFCreator-Free` com `/COMPONENTS="none"`. O Microsoft Teams usa `teamsbootstrapper.exe -p`.
+
+### Configuração do sistema
+
+Os fluxos incluem delegação de credenciais RDP para `TERMSRV/*`, entrada opcional no domínio, configuração do usuário atual e configuração completa do sistema. O WindowsProvisioningToolkit nunca reinicia a máquina automaticamente; quando necessário, o resumo informa que uma reinicialização está pendente.
+
+### Perfis e Dry Run
+
+O perfil padrão é `Portfolio`. Dados corporativos locais devem ficar em `src/WindowsProvisioningToolkit/Config/Corporate.local.json`, arquivo ignorado pelo Git. A entrada no domínio sempre exige confirmação.
+
+Os perfis de execução são Portfolio, Corporate básico, Corporate completo, Somente aplicativos e Somente sistema. O modo `Dry Run` simula instalações e alterações sem aplicar mudanças destrutivas.
+
+### Testes e documentação
+
+```powershell
+.\tests\Run-Tests.ps1
+```
+
+O script valida a sintaxe PowerShell e executa os testes Pester.
+
+- [Guia de uso](docs/USAGE.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Roadmap](docs/ROADMAP.md)
+
+Relatórios JSON são salvos em `C:\ProgramData\WindowsProvisioningToolkit\Reports`.
+
+## English
+
+The WindowsProvisioningToolkit is a modular PowerShell toolkit for automating Windows workstation provisioning and corporate environment configuration.
+
+This repository is the portfolio-safe version of the project. It demonstrates menus, application installation, system configuration, dry-run behavior, logging, reports, and tests without versioning internal domains, servers, users, credentials, or company configuration.
+
+### Status
+
+Current version: `0.1.1` — an MVP with application installation and system configuration.
+
+### Requirements
 
 - Windows
 - PowerShell 5.1 or newer
@@ -31,130 +78,28 @@ Run from PowerShell:
 .\Main.ps1
 ```
 
-## Application Installation
+### Application installation
 
-The application MVP can select and install:
+The MVP can select and install Google Chrome, Mozilla Firefox, WinRAR, AnyDesk, PDFCreator, and Microsoft Teams. Already-installed applications are skipped. Logs are written to `C:\ProgramData\WindowsProvisioningToolkit\Logs`, and a final summary is displayed.
 
-- Google Chrome
-- Mozilla Firefox
-- WinRAR
-- AnyDesk
-- PDFCreator
-- Microsoft Teams
+Chrome, Firefox, WinRAR, AnyDesk, and PDFCreator use Winget. PDFCreator uses the `PDFCreator-Free` package with `/COMPONENTS="none"`. Microsoft Teams uses `teamsbootstrapper.exe -p`.
 
-`Main.ps1` loads the module from `src/WindowsProvisioningToolkit` and calls `Start-WPT`.
-The menu lets the user select applications, skips software that is already
-installed, writes logs to `C:\ProgramData\WindowsProvisioningToolkit\Logs`, and displays a final
-summary.
+### System configuration
 
-## Installation Decisions
+The flows include RDP credential delegation for `TERMSRV/*`, optional domain join, current-user configuration, and complete system configuration. WindowsProvisioningToolkit never restarts the machine automatically; when required, the summary reports a pending restart.
 
-- Chrome, Firefox, WinRAR, AnyDesk, and PDFCreator use Winget.
-- PDFCreator uses the `PDFCreator-Free` package with `/COMPONENTS="none"` to
-  install PDFCreator without additional components, including PDF Architect.
-- Microsoft Teams uses `teamsbootstrapper.exe -p`, the current Microsoft
-  method for bulk provisioning.
+### Profiles and Dry Run
 
-## System Configuration
+The default profile is `Portfolio`. Local corporate data belongs in `src/WindowsProvisioningToolkit/Config/Corporate.local.json`, which is ignored by Git. Domain joining always requires confirmation.
 
-Version `0.1.1` adds the first system configuration flows:
+Available execution profiles are Portfolio, Basic Corporate, Full Corporate, Applications Only, and System Only. `Dry Run` simulates installations and changes without applying destructive operations.
 
-- RDP credential delegation for `TERMSRV/*`
-- Optional domain join with user confirmation
-- Current user configuration
-- Complete system configuration flow
-
-WindowsProvisioningToolkit does not restart the machine automatically. When an operation requires
-a restart, the final summary reports that a restart is needed.
-
-## Portfolio and Corporate Profiles
-
-The repository defaults to the `Portfolio` profile and must not contain
-company-specific values.
-
-Corporate environment values should stay separate from the main project logic.
-
-From the interface, open:
-
-```text
-[3] Perfil e Configuracao
-```
-
-Available options:
-
-```text
-[1] Ver perfil ativo
-[2] Configurar Corporate local
-[3] Limpar Corporate local
-```
-
-When local corporate configuration is enabled, WindowsProvisioningToolkit creates or updates:
-
-```text
-src/WindowsProvisioningToolkit/Config/Corporate.local.json
-```
-
-This file is ignored by Git. It can store local defaults, such as a suggested
-domain, but WindowsProvisioningToolkit still asks whether the workstation should be added to the
-domain. Domain join is never automatic.
-
-The `Limpar Corporate local` option removes `Corporate.local.json` and returns
-WindowsProvisioningToolkit to the `Portfolio` profile.
-
-## Dry Run
-
-The main menu includes:
-
-```text
-[4] Alternar Dry Run
-```
-
-When Dry Run is enabled, WindowsProvisioningToolkit simulates installation, RDP delegation, domain
-join, user changes, password changes, and restart operations without applying
-destructive system changes.
-
-## Execution Profiles
-
-The interface includes guided execution profiles:
-
-- Portfolio
-- Corporate basico
-- Corporate completo
-- Somente aplicativos
-- Somente sistema
-
-Before running a profile, WindowsProvisioningToolkit shows a pre-execution summary with the chosen
-profile, active configuration profile, Dry Run state, and planned tasks. Domain
-join still requires confirmation during execution.
-
-## Tests
-
-Automated tests use Pester:
+### Tests and documentation
 
 ```powershell
 .\tests\Run-Tests.ps1
 ```
 
-The script validates PowerShell syntax and runs the Pester suite. It fails the
-process if any test fails, which makes it suitable for local checks and future
-CI usage.
+The script validates PowerShell syntax and runs the Pester suite. Additional documentation is available in the [usage guide](docs/USAGE.md), [architecture notes](docs/ARCHITECTURE.md), and [roadmap](docs/ROADMAP.md).
 
-Current tests cover configuration loading, isolated corporate profile behavior,
-domain validation, Dry Run, final reports, and task runner counters.
-
-## Documentation
-
-- Usage guide: `docs/USAGE.md`
-- Architecture notes: `docs/ARCHITECTURE.md`
-- Roadmap: `docs/ROADMAP.md`
-
-## Reports
-
-When a flow finishes with a summary, WindowsProvisioningToolkit exports a JSON report to:
-
-```text
-C:\ProgramData\WindowsProvisioningToolkit\Reports
-```
-
-The report includes active profile, execution context, computer, user, Dry Run
-state, task summary, task details, and pending restart information.
+JSON reports are saved to `C:\ProgramData\WindowsProvisioningToolkit\Reports`.
