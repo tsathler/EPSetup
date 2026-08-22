@@ -1,12 +1,12 @@
-$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\EPSetup\EPSetup.psd1"
+$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 Import-Module $modulePath -Force
 
-Describe "Get-EPSetupConfig" {
+Describe "Get-WPTConfig" {
 
     It "loads the portfolio profile by default" {
-        $module = Get-Module EPSetup
-        $testConfigRoot = Join-Path $env:TEMP ("epsetup-config-standard-test-" + [guid]::NewGuid().ToString())
+        $module = Get-Module WindowsProvisioningToolkit
+        $testConfigRoot = Join-Path $env:TEMP ("windows-provisioning-toolkit-config-standard-test-" + [guid]::NewGuid().ToString())
 
         New-Item -Path $testConfigRoot -ItemType Directory -Force | Out-Null
 
@@ -14,7 +14,7 @@ Describe "Get-EPSetupConfig" {
             @"
 {
   "Application": {
-    "Name": "EPSetup",
+    "Name": "WindowsProvisioningToolkit",
     "Version": "0.1.1"
   },
   "Profile": {
@@ -22,9 +22,9 @@ Describe "Get-EPSetupConfig" {
     "Mode": "Standard"
   },
   "Paths": {
-    "Data": "C:\\ProgramData\\EPSetup",
-    "Logs": "C:\\ProgramData\\EPSetup\\Logs",
-    "Reports": "C:\\ProgramData\\EPSetup\\Reports"
+    "Data": "C:\\ProgramData\\WindowsProvisioningToolkit",
+    "Logs": "C:\\ProgramData\\WindowsProvisioningToolkit\\Logs",
+    "Reports": "C:\\ProgramData\\WindowsProvisioningToolkit\\Reports"
   },
   "Settings": {
     "RequireAdmin": true
@@ -40,8 +40,8 @@ Describe "Get-EPSetupConfig" {
 "@ | Set-Content -LiteralPath (Join-Path $testConfigRoot "Standard.json") -Encoding UTF8
 
             $config = & $module {
-                $env:EPSETUP_CONFIG_ROOT = $args[0]
-                Get-EPSetupConfig
+                $env:WPT_CONFIG_ROOT = $args[0]
+                Get-WPTConfig
             } $testConfigRoot
 
             $config.Profile.Name | Should Be "Portfolio"
@@ -50,7 +50,7 @@ Describe "Get-EPSetupConfig" {
         }
         finally {
             & $module {
-                Remove-Item Env:\EPSETUP_CONFIG_ROOT -ErrorAction SilentlyContinue
+                Remove-Item Env:\WPT_CONFIG_ROOT -ErrorAction SilentlyContinue
             }
 
             Remove-Item -LiteralPath $testConfigRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -58,8 +58,8 @@ Describe "Get-EPSetupConfig" {
     }
 
     It "merges Corporate.local.json when it exists in the configured root" {
-        $module = Get-Module EPSetup
-        $testConfigRoot = Join-Path $env:TEMP ("epsetup-config-test-" + [guid]::NewGuid().ToString())
+        $module = Get-Module WindowsProvisioningToolkit
+        $testConfigRoot = Join-Path $env:TEMP ("windows-provisioning-toolkit-config-test-" + [guid]::NewGuid().ToString())
 
         New-Item -Path $testConfigRoot -ItemType Directory -Force | Out-Null
 
@@ -67,7 +67,7 @@ Describe "Get-EPSetupConfig" {
             @"
 {
   "Application": {
-    "Name": "EPSetup",
+    "Name": "WindowsProvisioningToolkit",
     "Version": "0.1.1"
   },
   "Profile": {
@@ -75,9 +75,9 @@ Describe "Get-EPSetupConfig" {
     "Mode": "Standard"
   },
   "Paths": {
-    "Data": "C:\\ProgramData\\EPSetup",
-    "Logs": "C:\\ProgramData\\EPSetup\\Logs",
-    "Reports": "C:\\ProgramData\\EPSetup\\Reports"
+    "Data": "C:\\ProgramData\\WindowsProvisioningToolkit",
+    "Logs": "C:\\ProgramData\\WindowsProvisioningToolkit\\Logs",
+    "Reports": "C:\\ProgramData\\WindowsProvisioningToolkit\\Reports"
   },
   "Settings": {
     "RequireAdmin": true
@@ -109,8 +109,8 @@ Describe "Get-EPSetupConfig" {
 "@ | Set-Content -LiteralPath (Join-Path $testConfigRoot "Corporate.local.json") -Encoding UTF8
 
             $config = & $module {
-                $env:EPSETUP_CONFIG_ROOT = $args[0]
-                Get-EPSetupConfig
+                $env:WPT_CONFIG_ROOT = $args[0]
+                Get-WPTConfig
             } $testConfigRoot
 
             $config.Profile.Name | Should Be "Corporate"
@@ -121,7 +121,7 @@ Describe "Get-EPSetupConfig" {
         }
         finally {
             & $module {
-                Remove-Item Env:\EPSETUP_CONFIG_ROOT -ErrorAction SilentlyContinue
+                Remove-Item Env:\WPT_CONFIG_ROOT -ErrorAction SilentlyContinue
             }
 
             Remove-Item -LiteralPath $testConfigRoot -Recurse -Force -ErrorAction SilentlyContinue

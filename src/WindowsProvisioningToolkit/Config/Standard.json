@@ -1,0 +1,25 @@
+{
+  "Application": {
+    "Name": "WindowsProvisioningToolkit",
+    "Version": "0.1.1"
+  },
+  "Profile": {
+    "Name": "Portfolio",
+    "Mode": "Standard"
+  },
+  "Paths": {
+    "Data": "C:\\ProgramData\\WindowsProvisioningToolkit",
+    "Logs": "C:\\ProgramData\\WindowsProvisioningToolkit\\Logs",
+    "Reports": "C:\\ProgramData\\WindowsProvisioningToolkit\\Reports"
+  },
+  "Settings": {
+    "RequireAdmin": true
+  },
+  "System": {
+    "Domain": {
+      "DefaultDomainName": "",
+      "SuggestDefaultDomain": false,
+      "AutoJoin": false
+    }
+  }
+}

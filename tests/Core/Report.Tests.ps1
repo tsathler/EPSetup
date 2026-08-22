@@ -1,13 +1,13 @@
-$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\EPSetup\EPSetup.psd1"
+$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 Import-Module $modulePath -Force
 
-Describe "Export-EPExecutionReport" {
+Describe "Export-WPTExecutionReport" {
 
     It "writes a JSON execution report" {
-        $module = Get-Module EPSetup
-        $testConfigRoot = Join-Path $env:TEMP ("epsetup-report-config-" + [guid]::NewGuid().ToString())
-        $testDataRoot = Join-Path $env:TEMP ("epsetup-report-data-" + [guid]::NewGuid().ToString())
+        $module = Get-Module WindowsProvisioningToolkit
+        $testConfigRoot = Join-Path $env:TEMP ("windows-provisioning-toolkit-report-config-" + [guid]::NewGuid().ToString())
+        $testDataRoot = Join-Path $env:TEMP ("windows-provisioning-toolkit-report-data-" + [guid]::NewGuid().ToString())
         $testReportRoot = Join-Path $testDataRoot "Reports"
 
         New-Item -Path $testConfigRoot -ItemType Directory -Force | Out-Null
@@ -15,7 +15,7 @@ Describe "Export-EPExecutionReport" {
         try {
             $standardConfig = [ordered]@{
                 Application = [ordered]@{
-                    Name = "EPSetup"
+                    Name = "WindowsProvisioningToolkit"
                     Version = "0.1.1"
                 }
                 Profile = [ordered]@{
@@ -44,10 +44,10 @@ Describe "Export-EPExecutionReport" {
                 Set-Content -LiteralPath (Join-Path $testConfigRoot "Standard.json") -Encoding UTF8
 
             $reportPath = & $module {
-                $env:EPSETUP_CONFIG_ROOT = $args[0]
-                $script:LogFilePath = Join-Path $env:TEMP "epsetup-pester-report.log"
+                $env:WPT_CONFIG_ROOT = $args[0]
+                $script:LogFilePath = Join-Path $env:TEMP "windows-provisioning-toolkit-pester-report.log"
 
-                Export-EPExecutionReport `
+                Export-WPTExecutionReport `
                     -Context "Pester" `
                     -Result @{
                         Total = 1
@@ -73,7 +73,7 @@ Describe "Export-EPExecutionReport" {
         }
         finally {
             & $module {
-                Remove-Item Env:\EPSETUP_CONFIG_ROOT -ErrorAction SilentlyContinue
+                Remove-Item Env:\WPT_CONFIG_ROOT -ErrorAction SilentlyContinue
             }
 
             Remove-Item -LiteralPath $testConfigRoot -Recurse -Force -ErrorAction SilentlyContinue

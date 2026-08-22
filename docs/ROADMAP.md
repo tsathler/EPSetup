@@ -1,4 +1,4 @@
-# EPSetup Roadmap
+# WindowsProvisioningToolkit Roadmap
 
 ## v0.1.0 - Instalacao de Aplicativos
 

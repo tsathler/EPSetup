@@ -1,6 +1,6 @@
 # ============================================================================
 #
-# EPSetup - Test Runner
+# WindowsProvisioningToolkit - Test Runner
 #
 # Valida sintaxe PowerShell e executa testes Pester
 #

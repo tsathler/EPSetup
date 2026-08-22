@@ -1,16 +1,16 @@
-$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\EPSetup\EPSetup.psd1"
+$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 Import-Module $modulePath -Force
 
-Describe "Invoke-EPSetupTasks" {
+Describe "Invoke-WPTTasks" {
 
     It "counts skipped actions returned by the action block" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $result = & $module {
-            $script:LogFilePath = Join-Path $env:TEMP "epsetup-pester-taskrunner.log"
+            $script:LogFilePath = Join-Path $env:TEMP "windows-provisioning-toolkit-pester-taskrunner.log"
 
-            Invoke-EPSetupTasks -Tasks @(
+            Invoke-WPTTasks -Tasks @(
                 @{
                     Name = "Skip action"
                     Action = { "SKIPPED" }
@@ -24,12 +24,12 @@ Describe "Invoke-EPSetupTasks" {
     }
 
     It "counts skipped conditions" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $result = & $module {
-            $script:LogFilePath = Join-Path $env:TEMP "epsetup-pester-taskrunner.log"
+            $script:LogFilePath = Join-Path $env:TEMP "windows-provisioning-toolkit-pester-taskrunner.log"
 
-            Invoke-EPSetupTasks -Tasks @(
+            Invoke-WPTTasks -Tasks @(
                 @{
                     Name = "Skip condition"
                     Condition = { $false }
@@ -44,12 +44,12 @@ Describe "Invoke-EPSetupTasks" {
     }
 
     It "counts failed actions" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $result = & $module {
-            $script:LogFilePath = Join-Path $env:TEMP "epsetup-pester-taskrunner.log"
+            $script:LogFilePath = Join-Path $env:TEMP "windows-provisioning-toolkit-pester-taskrunner.log"
 
-            Invoke-EPSetupTasks -Tasks @(
+            Invoke-WPTTasks -Tasks @(
                 @{
                     Name = "Failure action"
                     Action = { throw "Expected failure" }

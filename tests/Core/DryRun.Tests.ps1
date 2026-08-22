@@ -1,30 +1,30 @@
-$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\EPSetup\EPSetup.psd1"
+$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 Import-Module $modulePath -Force
 
 Describe "Dry Run" {
 
     It "is disabled by default" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $enabled = & $module {
-            Test-EPDryRun
+            Test-WPTDryRun
         }
 
         $enabled | Should Be $false
     }
 
     It "can be enabled and disabled" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $status = & $module {
-            $script:LogFilePath = Join-Path $env:TEMP "epsetup-pester-dryrun.log"
+            $script:LogFilePath = Join-Path $env:TEMP "windows-provisioning-toolkit-pester-dryrun.log"
 
-            Set-EPDryRun -Enabled $true
-            $enabled = Test-EPDryRun
+            Set-WPTDryRun -Enabled $true
+            $enabled = Test-WPTDryRun
 
-            Set-EPDryRun -Enabled $false
-            $disabled = -not (Test-EPDryRun)
+            Set-WPTDryRun -Enabled $false
+            $disabled = -not (Test-WPTDryRun)
 
             [pscustomobject]@{
                 Enabled = $enabled

@@ -1,4 +1,4 @@
-# EPSetup v0.1.1 - Guia de Uso
+# WindowsProvisioningToolkit v0.1.1 - Guia de Uso
 
 ## Como executar
 
@@ -8,7 +8,7 @@ Abra o PowerShell na pasta do projeto e execute:
 .\Main.ps1
 ```
 
-O EPSetup carrega o modulo local em `src/EPSetup` e abre a interface de menu.
+O WindowsProvisioningToolkit carrega o modulo local em `src/WindowsProvisioningToolkit` e abre a interface de menu.
 
 ## Menu principal
 
@@ -44,7 +44,7 @@ Use esta area para executar:
 - Configuracao completa do sistema
 
 A entrada no dominio nunca e aplicada automaticamente. Mesmo com perfil
-Corporate configurado, o EPSetup pergunta se a maquina deve entrar no dominio.
+Corporate configurado, o WindowsProvisioningToolkit pergunta se a maquina deve entrar no dominio.
 
 ## Perfil Portfolio e Corporate
 
@@ -61,7 +61,7 @@ Para configurar dados locais de ambiente corporativo, acesse:
 Isso cria ou atualiza:
 
 ```text
-src/EPSetup/Config/Corporate.local.json
+src/WindowsProvisioningToolkit/Config/Corporate.local.json
 ```
 
 Esse arquivo e ignorado pelo Git. Ele pode guardar valores como dominio
@@ -74,7 +74,7 @@ Para limpar o perfil Corporate local:
 [3] Limpar Corporate local
 ```
 
-Depois disso, o EPSetup volta a usar somente o perfil Portfolio.
+Depois disso, o WindowsProvisioningToolkit volta a usar somente o perfil Portfolio.
 
 ## Dry Run
 
@@ -84,7 +84,7 @@ Use a opcao abaixo para alternar o modo de simulacao:
 [4] Alternar Dry Run
 ```
 
-Com Dry Run ativo, o EPSetup registra o que faria sem aplicar mudancas
+Com Dry Run ativo, o WindowsProvisioningToolkit registra o que faria sem aplicar mudancas
 destrutivas no sistema, como instalacoes, entrada no dominio, alteracao de
 usuario, senha ou reinicio.
 
@@ -100,7 +100,7 @@ Use esta area para iniciar fluxos prontos:
 [5] Somente sistema
 ```
 
-Antes de executar, o EPSetup mostra:
+Antes de executar, o WindowsProvisioningToolkit mostra:
 
 - Perfil escolhido
 - Perfil ativo
@@ -119,13 +119,13 @@ mantem a maquina fora do dominio.
 Logs:
 
 ```text
-C:\ProgramData\EPSetup\Logs
+C:\ProgramData\WindowsProvisioningToolkit\Logs
 ```
 
 Relatorios JSON:
 
 ```text
-C:\ProgramData\EPSetup\Reports
+C:\ProgramData\WindowsProvisioningToolkit\Reports
 ```
 
 Os relatorios incluem perfil ativo, contexto executado, computador, usuario,

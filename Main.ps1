@@ -1,6 +1,6 @@
 # ============================================================================
 #
-# EPSetup
+# WindowsProvisioningToolkit
 #
 # Main entry point
 #
@@ -9,12 +9,12 @@
 $ErrorActionPreference = "Stop"
 
 $rootPath = Split-Path -Parent $PSCommandPath
-$moduleManifest = Join-Path -Path $rootPath -ChildPath "src\EPSetup\EPSetup.psd1"
+$moduleManifest = Join-Path -Path $rootPath -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 try {
     Import-Module $moduleManifest -Force
 
-    Start-EPSetup -ScriptPath $PSCommandPath
+    Start-WPT -ScriptPath $PSCommandPath
 }
 catch {
     Write-Host ""

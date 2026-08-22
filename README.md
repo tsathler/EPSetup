@@ -1,6 +1,6 @@
-# EPSetup
+# WindowsProvisioningToolkit
 
-EPSetup is a modular PowerShell toolkit for automating Windows workstation
+WindowsProvisioningToolkit is a modular PowerShell toolkit for automating Windows workstation
 provisioning and corporate environment configuration.
 
 This repository is the portfolio-safe version of the project. It demonstrates
@@ -42,9 +42,9 @@ The application MVP can select and install:
 - PDFCreator
 - Microsoft Teams
 
-`Main.ps1` loads the module from `src/EPSetup` and calls `Start-EPSetup`.
+`Main.ps1` loads the module from `src/WindowsProvisioningToolkit` and calls `Start-WPT`.
 The menu lets the user select applications, skips software that is already
-installed, writes logs to `C:\ProgramData\EPSetup\Logs`, and displays a final
+installed, writes logs to `C:\ProgramData\WindowsProvisioningToolkit\Logs`, and displays a final
 summary.
 
 ## Installation Decisions
@@ -64,7 +64,7 @@ Version `0.1.1` adds the first system configuration flows:
 - Current user configuration
 - Complete system configuration flow
 
-EPSetup does not restart the machine automatically. When an operation requires
+WindowsProvisioningToolkit does not restart the machine automatically. When an operation requires
 a restart, the final summary reports that a restart is needed.
 
 ## Portfolio and Corporate Profiles
@@ -88,18 +88,18 @@ Available options:
 [3] Limpar Corporate local
 ```
 
-When local corporate configuration is enabled, EPSetup creates or updates:
+When local corporate configuration is enabled, WindowsProvisioningToolkit creates or updates:
 
 ```text
-src/EPSetup/Config/Corporate.local.json
+src/WindowsProvisioningToolkit/Config/Corporate.local.json
 ```
 
 This file is ignored by Git. It can store local defaults, such as a suggested
-domain, but EPSetup still asks whether the workstation should be added to the
+domain, but WindowsProvisioningToolkit still asks whether the workstation should be added to the
 domain. Domain join is never automatic.
 
 The `Limpar Corporate local` option removes `Corporate.local.json` and returns
-EPSetup to the `Portfolio` profile.
+WindowsProvisioningToolkit to the `Portfolio` profile.
 
 ## Dry Run
 
@@ -109,7 +109,7 @@ The main menu includes:
 [4] Alternar Dry Run
 ```
 
-When Dry Run is enabled, EPSetup simulates installation, RDP delegation, domain
+When Dry Run is enabled, WindowsProvisioningToolkit simulates installation, RDP delegation, domain
 join, user changes, password changes, and restart operations without applying
 destructive system changes.
 
@@ -123,7 +123,7 @@ The interface includes guided execution profiles:
 - Somente aplicativos
 - Somente sistema
 
-Before running a profile, EPSetup shows a pre-execution summary with the chosen
+Before running a profile, WindowsProvisioningToolkit shows a pre-execution summary with the chosen
 profile, active configuration profile, Dry Run state, and planned tasks. Domain
 join still requires confirmation during execution.
 
@@ -150,10 +150,10 @@ domain validation, Dry Run, final reports, and task runner counters.
 
 ## Reports
 
-When a flow finishes with a summary, EPSetup exports a JSON report to:
+When a flow finishes with a summary, WindowsProvisioningToolkit exports a JSON report to:
 
 ```text
-C:\ProgramData\EPSetup\Reports
+C:\ProgramData\WindowsProvisioningToolkit\Reports
 ```
 
 The report includes active profile, execution context, computer, user, Dry Run

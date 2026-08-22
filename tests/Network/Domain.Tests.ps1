@@ -1,25 +1,25 @@
-$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\EPSetup\EPSetup.psd1"
+$modulePath = Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
 
 Import-Module $modulePath -Force
 
 Describe "Domain validation" {
 
     It "accepts a valid DNS domain name" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $result = & $module {
-            Test-EPDomainName -DomainName "example.local"
+            Test-WPTDomainName -DomainName "example.local"
         }
 
         $result | Should Be $true
     }
 
     It "rejects an empty domain name" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $errorMessage = & $module {
             try {
-                Test-EPDomainName -DomainName ""
+                Test-WPTDomainName -DomainName ""
                 $null
             }
             catch {
@@ -31,11 +31,11 @@ Describe "Domain validation" {
     }
 
     It "rejects invalid domain characters" {
-        $module = Get-Module EPSetup
+        $module = Get-Module WindowsProvisioningToolkit
 
         $errorMessage = & $module {
             try {
-                Test-EPDomainName -DomainName "example\local"
+                Test-WPTDomainName -DomainName "example\local"
                 $null
             }
             catch {
