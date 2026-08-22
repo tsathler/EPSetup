@@ -32,9 +32,10 @@ function Write-WPTLog {
     }
 
 
+    $safeMessage = [regex]::Replace($Message, '(?i)(password|senha|credential|credencial|secret|token)\s*[:=]\s*[^;\s]+', '$1=[REDACTED]')
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
-    $logLine = "[$timestamp] [$Level] $Message"
+    $logLine = "[$timestamp] [$Level] $safeMessage"
 
 
     # Grava no arquivo

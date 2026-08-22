@@ -68,7 +68,7 @@ try {
 
             "4" {
                 Set-WPTDryRun -Enabled (-not (Test-WPTDryRun))
-                Read-Host "Pressione ENTER para continuar"
+                Read-WPTPause
             }
 
             "5" {
@@ -124,7 +124,7 @@ function Invoke-WPTSoftwareInstallationFlow {
     Show-WPTSummary -Result $result
     Export-WPTExecutionReport -Result $result -Context "Software" | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function Invoke-WPTSystemConfigurationFlow {
@@ -164,17 +164,17 @@ function Invoke-WPTProfileConfigurationFlow {
         switch ($profileOption) {
             "1" {
                 Show-WPTActiveProfile
-                Read-Host "Pressione ENTER para voltar"
+                Read-WPTPause
             }
 
             "2" {
                 Set-WPTCorporateLocalConfig
-                Read-Host "Pressione ENTER para voltar"
+                Read-WPTPause
             }
 
             "3" {
                 Clear-WPTCorporateLocalConfig | Out-Null
-                Read-Host "Pressione ENTER para voltar"
+                Read-WPTPause
             }
 
             "0" {
@@ -241,7 +241,7 @@ function Invoke-WPTCredentialDelegationTestFlow {
     Show-WPTSummary -Result $result
     Export-WPTExecutionReport -Result $result -Context "CredentialDelegation" | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function Invoke-WPTDomainJoinFlow {
@@ -269,7 +269,7 @@ function Invoke-WPTDomainJoinFlow {
     Show-WPTRestartSummary
     Export-WPTExecutionReport -Result $result -Context "DomainJoin" | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function Invoke-WPTFullSystemConfigurationFlow {
@@ -304,7 +304,7 @@ function Invoke-WPTFullSystemConfigurationFlow {
     Show-WPTRestartSummary
     Export-WPTExecutionReport -Result $result -Context "FullSystemConfiguration" | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function Invoke-WPTPortfolioExecutionProfile {
@@ -424,7 +424,7 @@ param(
     Show-WPTRestartSummary
     Export-WPTExecutionReport -Result $result -Context $Context | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function New-WPTSystemConfigurationTasks {
@@ -532,7 +532,7 @@ function Invoke-WPTUserConfigurationFlow {
     Show-WPTSummary -Result $result
     Export-WPTExecutionReport -Result $result -Context "UserConfiguration" | Out-Null
 
-    Read-Host "Pressione ENTER para voltar"
+    Read-WPTPause
 }
 
 function Show-WPTSummary {
@@ -597,4 +597,3 @@ function Show-WPTRestartSummary {
     Write-Host "Reinicie o computador depois de concluir as configuracoes." -ForegroundColor Yellow
     Write-Host ""
 }
-

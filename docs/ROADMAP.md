@@ -23,9 +23,17 @@
 - [x] Testes automatizados iniciais
 - [x] Script unico de validacao
 - [x] Relatorio final em JSON
-- [x] Guia de uso da v0.1.1
+- [x] Guia de uso da v0.2.0
 - [x] Perfis de execucao
 - [x] Resumo pre-execucao
+
+## v0.2.0 - Qualidade e segurança
+
+- [x] Pipeline de CI com testes e análise estática
+- [x] Validação da configuração antes da execução
+- [x] Modo sem pausa para automações
+- [x] Redação básica de dados sensíveis nos logs
+- [x] Cobertura inicial da validação de configuração
 
 ## Próximas melhorias
 

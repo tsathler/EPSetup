@@ -6,7 +6,15 @@
 #
 # ============================================================================
 
+param(
+    [switch]$NoPause
+)
+
 $ErrorActionPreference = "Stop"
+
+if ($NoPause) {
+    $env:WPT_NO_PAUSE = "1"
+}
 
 $rootPath = Split-Path -Parent $PSCommandPath
 $moduleManifest = Join-Path -Path $rootPath -ChildPath "src\WindowsProvisioningToolkit\WindowsProvisioningToolkit.psd1"
@@ -21,5 +29,7 @@ catch {
     Write-Host "ERRO ENCONTRADO:" -ForegroundColor Red
     Write-Host $_.Exception.Message -ForegroundColor Red
     Write-Host ""
-    Read-Host "Pressione ENTER para fechar"
+    if (-not $NoPause) {
+        Read-Host "Pressione ENTER para fechar"
+    }
 }

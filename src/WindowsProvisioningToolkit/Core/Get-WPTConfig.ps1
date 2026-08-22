@@ -131,5 +131,28 @@ function Get-WPTConfig {
             -Override $corporateConfig
     }
 
+    Test-WPTConfig -Config $config
     return $config
+}
+
+function Test-WPTConfig {
+    param([Parameter(Mandatory = $true)][hashtable]$Config)
+
+    foreach ($section in @('Application', 'Profile', 'Paths', 'Settings', 'System')) {
+        if (-not $Config.ContainsKey($section)) {
+            throw "Configuracao invalida: secao obrigatoria ausente: $section"
+        }
+    }
+
+    foreach ($pathName in @('Data', 'Logs', 'Reports')) {
+        if ([string]::IsNullOrWhiteSpace([string]$Config.Paths[$pathName])) {
+            throw "Configuracao invalida: caminho obrigatorio ausente: Paths.$pathName"
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace([string]$Config.Application.Version)) {
+        throw "Configuracao invalida: Application.Version nao informado."
+    }
+
+    return $true
 }

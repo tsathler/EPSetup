@@ -1,4 +1,4 @@
-# WindowsProvisioningToolkit v0.1.1 - Guia de Uso
+# WindowsProvisioningToolkit v0.2.0 - Guia de Uso
 
 ## Como executar
 

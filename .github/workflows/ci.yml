@@ -1,0 +1,26 @@
+name: Validacao
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  powershell:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        powershell: ["5.1", "7"]
+    steps:
+      - name: Obter codigo
+        uses: actions/checkout@v4
+      - name: Executar testes
+        shell: pwsh
+        run: .\tests\Run-Tests.ps1
+      - name: Instalar PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -SkipPublisherCheck
+      - name: Analisar scripts
+        shell: pwsh
+        run: |
+          $result = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+          if ($result) { $result | Format-List; exit 1 }

@@ -8,7 +8,7 @@ Este repositório é a versão segura para portfólio. Ele demonstra menus, inst
 
 ### Status
 
-Versão atual: `0.1.1` — MVP com instalação de aplicativos e configuração do sistema.
+Versão atual: `0.2.0` — MVP com validação, CI, instalação de aplicativos e configuração do sistema.
 
 ### Requisitos
 
@@ -48,6 +48,12 @@ Os perfis de execução são Portfolio, Corporate básico, Corporate completo, S
 
 O script valida a sintaxe PowerShell e executa os testes Pester.
 
+Para automações que não devem aguardar entrada no final de uma falha, use:
+
+```powershell
+.\Main.ps1 -NoPause
+```
+
 - [Guia de uso](docs/USAGE.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
@@ -62,7 +68,7 @@ This repository is the portfolio-safe version of the project. It demonstrates me
 
 ### Status
 
-Current version: `0.1.1` — an MVP with application installation and system configuration.
+Current version: `0.2.0` — an MVP with validation, CI, application installation, and system configuration.
 
 ### Requirements
 
@@ -101,5 +107,11 @@ Available execution profiles are Portfolio, Basic Corporate, Full Corporate, App
 ```
 
 The script validates PowerShell syntax and runs the Pester suite. Additional documentation is available in the [usage guide](docs/USAGE.md), [architecture notes](docs/ARCHITECTURE.md), and [roadmap](docs/ROADMAP.md).
+
+For automation that should not wait for input after a failure, use:
+
+```powershell
+.\Main.ps1 -NoPause
+```
 
 JSON reports are saved to `C:\ProgramData\WindowsProvisioningToolkit\Reports`.
